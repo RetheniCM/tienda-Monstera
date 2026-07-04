@@ -32,12 +32,13 @@ router.get('/', async (req, res) => {
 
 // POST /api/productos (CRUD - Alta de planta)
 router.post('/', async (req, res) => {
-  const { nombre_comun, nombre_cienti, categoria, nivel_riego, nivel_luz, precio, stock } = req.body;
+  // Añadimos "imagen" al req.body
+  const { nombre_comun, nombre_cienti, categoria, nivel_riego, nivel_luz, precio, stock, imagen } = req.body;
 
   try {
     await db.query(
-      'INSERT INTO productos (nombre_comun, nombre_cienti, categoria, nivel_riego, nivel_luz, precio, stock) VALUES (?, ?, ?, ?, ?, ?, ?)',
-      [nombre_comun, nombre_cienti, categoria, nivel_riego, nivel_luz, precio, stock]
+      'INSERT INTO productos (nombre_comun, nombre_cienti, categoria, nivel_riego, nivel_luz, precio, stock, imagen) VALUES (?, ?, ?, ?, ?, ?, ?, ?)',
+      [nombre_comun, nombre_cienti, categoria, nivel_riego, nivel_luz, precio, stock, imagen || 'default_planta.png']
     );
     res.status(201).json({ message: "Producto guardado con éxito." });
   } catch (error) {
@@ -48,12 +49,12 @@ router.post('/', async (req, res) => {
 // PUT /api/productos/:id (CRUD - Modificar planta)
 router.put('/:id', async (req, res) => {
   const { id } = req.params;
-  const { nombre_comun, nombre_cienti, categoria, nivel_riego, nivel_luz, precio, stock } = req.body;
+  const { nombre_comun, nombre_cienti, categoria, nivel_riego, nivel_luz, precio, stock, imagen } = req.body;
 
   try {
     const [result] = await db.query(
-      'UPDATE productos SET nombre_comun=?, nombre_cienti=?, categoria=?, nivel_riego=?, nivel_luz=?, precio=?, stock=? WHERE id_producto=?',
-      [nombre_comun, nombre_cienti, categoria, nivel_riego, nivel_luz, precio, stock, id]
+      'UPDATE productos SET nombre_comun=?, nombre_cienti=?, categoria=?, nivel_riego=?, nivel_luz=?, precio=?, stock=?, imagen=? WHERE id_producto=?',
+      [nombre_comun, nombre_cienti, categoria, nivel_riego, nivel_luz, precio, stock, imagen, id]
     );
 
     if (result.affectedRows === 0) {
