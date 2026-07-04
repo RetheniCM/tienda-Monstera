@@ -3,10 +3,10 @@ const db = require('../config/db');
 // Obtener todas las plantas del catálogo
 exports.obtenerProductos = async (req, res) => {
   try {
-    // Hacemos la consulta a la BD de Wamp
+    // Hacer la consulta a la base
     const [rows] = await db.query('SELECT * FROM productos');
     
-    // Respondemos con los datos en formato JSON
+    // Responde con los datos en formato JSON
     res.json(rows);
   } catch (error) {
     console.error(error);
