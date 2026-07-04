@@ -1,21 +1,30 @@
 import React, { useState } from 'react';
 import axios from 'axios';
+// IMPORTAMOS EL LOGO QUE GUARDASTE
+import logoMonstera from '../assets/log_monstera.png';
 
 function Login() {
   const [correo, setCorreo] = useState('');
   const [contrasena, setContrasena] = useState('');
   const [mensaje, setMensaje] = useState('');
+  // Bandera para saber si hay un error y ajustar la UX
+  const [errorStatus, setErrorStatus] = useState(false);
 
   const manejarLogin = async (e) => {
     e.preventDefault();
+    // Reseteamos el estado de error antes de cada intento
+    setErrorStatus(false); 
     try {
       const respuesta = await axios.post('http://localhost:5000/api/auth/login', {
         correo,
         contrasena
       });
+      // LOGIN EXITOSO
       setMensaje(`¡Bienvenido! Acceso correcto.`);
       console.log('Datos:', respuesta.data);
     } catch (error) {
+      // LOGIN FALLIDO
+      setErrorStatus(true); // Activamos la bandera de error
       if (error.response && error.response.data) {
         setMensaje(error.response.data.error || 'Error al iniciar sesión');
       } else {
@@ -27,115 +36,96 @@ function Login() {
   return (
     <div style={{ minHeight: '100vh', display: 'flex', flexDirection: 'column' }}>
       
-      {/* BARRA DE NAVEGACIÓN SUPERIOR */}
-      <header style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', padding: '20px 60px', background: 'transparent' }}>
-        <div style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
-          {/* Logo simulado de la hojita */}
-          <span style={{ fontSize: '24px', color: '#12331b' }}>🍃</span>
+      {/* BARRA DE NAVEGACIÓN */}
+      <header role="banner" style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', padding: '20px 60px', background: 'transparent' }}>
+        <div style={{ display: 'flex', alignItems: 'center', gap: '15px' }}>
+          {/* EL LOGO SEMÁNTICO */}
+          <img 
+            src={logoMonstera} 
+            alt="Logo Monstera - Plants & Gardening" // Texto alternativo claro
+            style={{ height: '40px', width: 'auto' }} 
+          />
+          {/* Mantenemos el nombre de la marca en texto */}
           <span className="serif-font" style={{ fontSize: '22px', fontWeight: 'bold', letterSpacing: '0.5px' }}>Monstera</span>
         </div>
       </header>
 
       {/* CONTENIDO CENTRAL */}
-      <main style={{ flex: 1, display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', paddingBottom: '60px' }}>
+      <main role="main" style={{ flex: 1, display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', paddingBottom: '60px' }}>
         
-        {/* Divisor decorativo superior (Hojita / Gota) */}
-        <div style={{ display: 'flex', alignItems: 'center', width: '200px', margin: '0 auto 20px auto' }}>
+        {/* Divisor decorativo */}
+        <div style={{ display: 'flex', alignItems: 'center', width: '200px', margin: '0 auto 20px auto' }} aria-hidden="true">
           <div style={{ flex: 1, height: '1px', backgroundColor: '#e0dbd3' }}></div>
           <span style={{ margin: '0 10px', color: '#12331b', fontSize: '14px' }}>💧</span>
           <div style={{ flex: 1, height: '1px', backgroundColor: '#e0dbd3' }}></div>
         </div>
 
         {/* TARJETA DE LOGIN */}
-        <div style={{ 
-          background: '#ffffff', 
-          width: '100%', 
-          maxWidth: '460px', 
-          padding: '40px 45px', 
-          borderRadius: '16px', 
-          boxShadow: '0 10px 30px rgba(0, 0, 0, 0.04)',
-          border: '1px solid rgba(230, 227, 221, 0.6)'
-        }}>
+        <section aria-labelledby="login-title" style={{ background: '#ffffff', width: '100%', maxWidth: '460px', padding: '40px 45px', borderRadius: '16px', boxShadow: '0 10px 30px rgba(0, 0, 0, 0.04)', border: '1px solid rgba(230, 227, 221, 0.6)' }}>
           
-          <h2 style={{ textAlign: 'center', fontSize: '32px', marginBottom: '6px', fontWeight: '700' }}>Iniciar Sesión</h2>
-          <p style={{ fontFamily: 'Georgia, serif', fontStyle: 'italic', color: '#8b5a42', textAlign: 'center', marginBottom: '30px', fontSize: '15px' }}>
-            Cultiva tu mundo
-          </p>
+          <h2 id="login-title" style={{ textAlign: 'center', fontSize: '32px', marginBottom: '6px', fontWeight: '700' }}>Iniciar Sesión</h2>
+          <p style={{ fontFamily: 'Georgia, serif', fontStyle: 'italic', color: '#8b5a42', textAlign: 'center', marginBottom: '30px', fontSize: '15px' }}>Cultiva tu mundo</p>
 
           <form onSubmit={manejarLogin}>
+            
             {/* Campo Correo */}
             <div style={{ marginBottom: '24px' }}>
-              <label style={{ display: 'block', marginBottom: '8px', fontSize: '14px', fontWeight: '600', color: '#2d4a30' }}>
+              <label htmlFor="correo-input" style={{ display: 'block', marginBottom: '8px', fontSize: '14px', fontWeight: '600', color: '#2d4a30' }}>
                 Correo Electrónico
               </label>
               <input 
+                id="correo-input"
                 type="email" 
                 placeholder="tu@correo.com"
                 value={correo} 
                 onChange={(e) => setCorreo(e.target.value)} 
                 required 
-                style={{ 
-                  width: '100%', 
-                  padding: '14px 16px', 
-                  backgroundColor: '#eae7e1', 
-                  border: 'none', 
-                  borderRadius: '8px', 
-                  fontSize: '15px',
-                  color: '#444'
-                }}
+                autoComplete="email"
+                style={{ width: '100%', padding: '14px 16px', backgroundColor: '#eae7e1', border: 'none', borderRadius: '8px', fontSize: '15px', color: '#444' }}
               />
             </div>
 
             {/* Campo Contraseña */}
             <div style={{ marginBottom: '30px' }}>
               <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: '8px' }}>
-                <label style={{ fontSize: '14px', fontWeight: '600', color: '#2d4a30' }}>Contraseña</label>
+                <label htmlFor="contrasena-input" style={{ fontSize: '14px', fontWeight: '600', color: '#2d4a30' }}>Contraseña</label>
                 <a href="#olvide" style={{ fontSize: '13px', color: '#8b5a42', textDecoration: 'none' }}>¿Olvidaste tu contraseña?</a>
               </div>
               <input 
+                id="contrasena-input"
                 type="password" 
                 placeholder="••••••••"
                 value={contrasena} 
                 onChange={(e) => setContrasena(e.target.value)} 
                 required 
-                style={{ 
-                  width: '100%', 
-                  padding: '14px 16px', 
-                  backgroundColor: '#eae7e1', 
-                  border: 'none', 
-                  borderRadius: '8px', 
-                  fontSize: '15px'
-                }}
+                autoComplete="current-password"
+                style={{ width: '100%', padding: '14px 16px', backgroundColor: '#eae7e1', border: 'none', borderRadius: '8px', fontSize: '15px' }}
               />
             </div>
 
-            {/* Botón de Entrada */}
-            <button type="submit" style={{ 
-              width: '100%', 
-              padding: '14px', 
-              backgroundColor: '#19381f', /* El verde oscuro del santuario */
-              color: '#ffffff', 
-              border: 'none', 
-              borderRadius: '8px', 
-              fontSize: '14px', 
-              fontWeight: '700',
-              letterSpacing: '1px',
-              cursor: 'pointer',
-              transition: 'background 0.2s'
-            }}>
+            <button type="submit" style={{ width: '100%', padding: '14px', backgroundColor: '#19381f', color: '#ffffff', border: 'none', borderRadius: '8px', fontSize: '14px', fontWeight: '700', letterSpacing: '1px', cursor: 'pointer' }}>
               ENTRAR AL SANTUARIO
             </button>
           </form>
 
-          {mensaje && (
-            <p style={{ marginTop: '20px', color: '#8b5a42', fontWeight: 'bold', textAlign: 'center', fontSize: '14px' }}>
-              {mensaje}
-            </p>
-          )}
+          {/* CONTENEDOR DE MENSAJE ACCESIBLE */}
+          <div 
+            id="login-status" 
+            role={errorStatus ? "alert" : "status"} // Rol dinámico según el estado
+            aria-live="polite" 
+            style={{ 
+              marginTop: '20px', 
+              color: errorStatus ? '#b71c1c' : '#8b5a42', // Rojo para error, marrón para info
+              fontWeight: 'bold', 
+              textAlign: 'center', 
+              fontSize: '14px' 
+            }}
+          >
+            {mensaje}
+          </div>
 
-          {/* Registro inferior */}
           <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', marginTop: '30px' }}>
-            <div style={{ display: 'flex', alignItems: 'center', width: '120px', marginBottom: '20px' }}>
+            <div style={{ display: 'flex', alignItems: 'center', width: '120px', marginBottom: '20px' }} aria-hidden="true">
               <div style={{ flex: 1, height: '1px', backgroundColor: '#eae7e1' }}></div>
               <span style={{ margin: '0 8px', color: '#ccc', fontSize: '10px' }}>✦</span>
               <div style={{ flex: 1, height: '1px', backgroundColor: '#eae7e1' }}></div>
@@ -145,7 +135,7 @@ function Login() {
             </p>
           </div>
 
-        </div>
+        </section>
       </main>
     </div>
   );

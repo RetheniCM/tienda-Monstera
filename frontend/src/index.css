@@ -22,3 +22,11 @@ h1, h2, .serif-font {
   font-family: 'Georgia', Georgia, serif;
   color: #12331b; /* Verde bosque oscuro */
 }
+
+/* Mejora el foco visual para la navegación por teclado */
+input:focus-visible, 
+button:focus-visible, 
+a:focus-visible {
+  outline: 3px solid #19381f; /* Verde bosque del santuario */
+  outline-offset: 2px;
+}
