@@ -1,35 +1,37 @@
 import React, { useState } from 'react';
 import axios from 'axios';
-// IMPORTAMOS EL LOGO QUE GUARDASTE
 import logoMonstera from '../assets/log_monstera.png';
 import { Link } from 'react-router-dom';
 
-function Login() {
+function Registro() {
+  const [nombre, setNombre] = useState('');
   const [correo, setCorreo] = useState('');
   const [contrasena, setContrasena] = useState('');
   const [mensaje, setMensaje] = useState('');
-  // Bandera para saber si hay un error y ajustar la UX
   const [errorStatus, setErrorStatus] = useState(false);
 
-  const manejarLogin = async (e) => {
+  const manejarRegistro = async (e) => {
     e.preventDefault();
-    // Reseteamos el estado de error antes de cada intento
-    setErrorStatus(false); 
+    setErrorStatus(false);
     try {
-      const respuesta = await axios.post('http://localhost:5000/api/auth/login', {
+      // Apuntamos al endpoint de registro en tu backend
+      const respuesta = await axios.post('http://localhost:5000/api/auth/registrar', {
+        nombre,
         correo,
         contrasena
       });
-      // LOGIN EXITOSO
-      setMensaje(`¡Bienvenido! Acceso correcto.`);
-      console.log('Datos:', respuesta.data);
+      setErrorStatus(false);
+      setMensaje('¡Registro exitoso! Ya puedes iniciar sesión.');
+      // Limpiamos los campos después de registrar con éxito
+      setNombre('');
+      setCorreo('');
+      setContrasena('');
     } catch (error) {
-      // LOGIN FALLIDO
-      setErrorStatus(true); // Activamos la bandera de error
+      setErrorStatus(true);
       if (error.response && error.response.data) {
-        setMensaje(error.response.data.error || 'Error al iniciar sesión');
+        setMensaje(error.response.data.error || 'Error al registrar usuario');
       } else {
-        setMensaje('No se pudo conectar con el servidor backend');
+        setMensaje('No se pudo conectar con el servidor');
       }
     }
   };
@@ -40,13 +42,11 @@ function Login() {
       {/* BARRA DE NAVEGACIÓN */}
       <header role="banner" style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', padding: '20px 60px', background: 'transparent' }}>
         <div style={{ display: 'flex', alignItems: 'center', gap: '15px' }}>
-          {/* EL LOGO SEMÁNTICO */}
           <img 
             src={logoMonstera} 
-            alt="Logo Monstera - Plants & Gardening" // Texto alternativo claro
+            alt="Logo Monstera - Plants & Gardening" 
             style={{ height: '40px', width: 'auto' }} 
           />
-          {/* Mantenemos el nombre de la marca en texto */}
           <span className="serif-font" style={{ fontSize: '22px', fontWeight: 'bold', letterSpacing: '0.5px' }}>Monstera</span>
         </div>
       </header>
@@ -57,18 +57,35 @@ function Login() {
         {/* Divisor decorativo */}
         <div style={{ display: 'flex', alignItems: 'center', width: '200px', margin: '0 auto 20px auto' }} aria-hidden="true">
           <div style={{ flex: 1, height: '1px', backgroundColor: '#e0dbd3' }}></div>
-          <span style={{ margin: '0 10px', color: '#12331b', fontSize: '14px' }}>💧</span>
+          <span style={{ margin: '0 10px', color: '#12331b', fontSize: '14px' }}>🍃</span>
           <div style={{ flex: 1, height: '1px', backgroundColor: '#e0dbd3' }}></div>
         </div>
 
-        {/* TARJETA DE LOGIN */}
-        <section aria-labelledby="login-title" style={{ background: '#ffffff', width: '100%', maxWidth: '460px', padding: '40px 45px', borderRadius: '16px', boxShadow: '0 10px 30px rgba(0, 0, 0, 0.04)', border: '1px solid rgba(230, 227, 221, 0.6)' }}>
+        {/* TARJETA DE REGISTRO */}
+        <section aria-labelledby="registro-title" style={{ background: '#ffffff', width: '100%', maxWidth: '460px', padding: '40px 45px', borderRadius: '16px', boxShadow: '0 10px 30px rgba(0, 0, 0, 0.04)', border: '1px solid rgba(230, 227, 221, 0.6)' }}>
           
-          <h2 id="login-title" style={{ textAlign: 'center', fontSize: '32px', marginBottom: '6px', fontWeight: '700' }}>Iniciar Sesión</h2>
-          <p style={{ fontFamily: 'Georgia, serif', fontStyle: 'italic', color: '#8b5a42', textAlign: 'center', marginBottom: '30px', fontSize: '15px' }}>Cultiva tu mundo</p>
+          <h2 id="registro-title" style={{ textAlign: 'center', fontSize: '32px', marginBottom: '6px', fontWeight: '700' }}>Crear Cuenta</h2>
+          <p style={{ fontFamily: 'Georgia, serif', fontStyle: 'italic', color: '#8b5a42', textAlign: 'center', marginBottom: '30px', fontSize: '15px' }}>Únete a nuestro santuario</p>
 
-          <form onSubmit={manejarLogin}>
+          <form onSubmit={manejarRegistro}>
             
+            {/* Campo Nombre */}
+            <div style={{ marginBottom: '24px' }}>
+              <label htmlFor="nombre-input" style={{ display: 'block', marginBottom: '8px', fontSize: '14px', fontWeight: '600', color: '#2d4a30' }}>
+                Nombre Completo
+              </label>
+              <input 
+                id="nombre-input"
+                type="text" 
+                placeholder="Tu nombre completo"
+                value={nombre} 
+                onChange={(e) => setNombre(e.target.value)} 
+                required 
+                autoComplete="name"
+                style={{ width: '100%', padding: '14px 16px', backgroundColor: '#eae7e1', border: 'none', borderRadius: '8px', fontSize: '15px', color: '#444' }}
+              />
+            </div>
+
             {/* Campo Correo */}
             <div style={{ marginBottom: '24px' }}>
               <label htmlFor="correo-input" style={{ display: 'block', marginBottom: '8px', fontSize: '14px', fontWeight: '600', color: '#2d4a30' }}>
@@ -82,41 +99,44 @@ function Login() {
                 onChange={(e) => setCorreo(e.target.value)} 
                 required 
                 autoComplete="email"
+                aria-invalid={errorStatus}
+                aria-describedby={errorStatus ? "registro-status" : undefined}
                 style={{ width: '100%', padding: '14px 16px', backgroundColor: '#eae7e1', border: 'none', borderRadius: '8px', fontSize: '15px', color: '#444' }}
               />
             </div>
 
             {/* Campo Contraseña */}
             <div style={{ marginBottom: '30px' }}>
-              <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: '8px' }}>
-                <label htmlFor="contrasena-input" style={{ fontSize: '14px', fontWeight: '600', color: '#2d4a30' }}>Contraseña</label>
-                <a href="#olvide" style={{ fontSize: '13px', color: '#8b5a42', textDecoration: 'none' }}>¿Olvidaste tu contraseña?</a>
-              </div>
+              <label htmlFor="contrasena-input" style={{ display: 'block', marginBottom: '8px', fontSize: '14px', fontWeight: '600', color: '#2d4a30' }}>
+                Contraseña
+              </label>
               <input 
                 id="contrasena-input"
                 type="password" 
-                placeholder="••••••••"
+                placeholder="Mínimo 6 caracteres"
                 value={contrasena} 
                 onChange={(e) => setContrasena(e.target.value)} 
                 required 
-                autoComplete="current-password"
+                autoComplete="new-password"
+                aria-invalid={errorStatus}
+                aria-describedby={errorStatus ? "registro-status" : undefined}
                 style={{ width: '100%', padding: '14px 16px', backgroundColor: '#eae7e1', border: 'none', borderRadius: '8px', fontSize: '15px' }}
               />
             </div>
 
             <button type="submit" style={{ width: '100%', padding: '14px', backgroundColor: '#19381f', color: '#ffffff', border: 'none', borderRadius: '8px', fontSize: '14px', fontWeight: '700', letterSpacing: '1px', cursor: 'pointer' }}>
-              ENTRAR AL SANTUARIO
+              UNIRSE AL SANTUARIO
             </button>
           </form>
 
-          {/* CONTENEDOR DE MENSAJE ACCESIBLE */}
+          {/* MENSAJE DE ESTADO */}
           <div 
-            id="login-status" 
-            role={errorStatus ? "alert" : "status"} // Rol dinámico según el estado
+            id="registro-status" 
+            role={errorStatus ? "alert" : "status"} 
             aria-live="polite" 
             style={{ 
               marginTop: '20px', 
-              color: errorStatus ? '#b71c1c' : '#8b5a42', // Rojo para error, marrón para info
+              color: errorStatus ? '#b71c1c' : '#2e7d32', /* Verde éxito o Rojo error */
               fontWeight: 'bold', 
               textAlign: 'center', 
               fontSize: '14px' 
@@ -125,6 +145,7 @@ function Login() {
             {mensaje}
           </div>
 
+          {/* Enlace para volver al login */}
           <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', marginTop: '30px' }}>
             <div style={{ display: 'flex', alignItems: 'center', width: '120px', marginBottom: '20px' }} aria-hidden="true">
               <div style={{ flex: 1, height: '1px', backgroundColor: '#eae7e1' }}></div>
@@ -132,7 +153,7 @@ function Login() {
               <div style={{ flex: 1, height: '1px', backgroundColor: '#eae7e1' }}></div>
             </div>
             <p style={{ fontSize: '14px', color: '#555' }}>
-               ¿No tienes cuenta? <Link to="/registro" style={{ color: '#19381f', fontWeight: '700', textDecoration: 'underline' }}>Regístrate aquí</Link>
+              ¿Ya tienes cuenta? <Link to="/login" style={{ color: '#19381f', fontWeight: '700', textDecoration: 'underline' }}>Inicia sesión aquí</Link>
             </p>
           </div>
 
@@ -142,4 +163,4 @@ function Login() {
   );
 }
 
-export default Login;
+export default Registro;
