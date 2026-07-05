@@ -4,6 +4,7 @@ import { initReactI18next } from 'react-i18next';
 const resources = {
   es: {
     translation: {
+      //CATALOGO
       "titulo": "Catálogo de Plantas",
       "buscar": "Buscar planta por nombre...",
       "carrito": "Carrito",
@@ -23,11 +24,25 @@ const resources = {
       "sombra": "Sombra",
       "agregar_carrito": "+ Carrito",
       "agotado": "Agotado",
-      "mostrando": "Mostrando {{count}} plantas"
+      "mostrando": "Mostrando {{count}} plantas",
+      // LOGIN Y REGISTRO
+      "saludo" : "Cultiva tu mundo",
+      "iniciar_sesion": "Iniciar Sesión",
+      "registrarse": "Registrarse",
+      "correo": "Correo Electrónico",
+      "contrasena": "Contraseña",
+      "confirmar_contrasena": "Confirmar Contraseña",
+      "nombre_usuario": "Nombre de Usuario",
+      "boton_ingresar": "Ingresar",
+      "boton_crear": "Crear Cuenta",
+      "pregunta_registro": "¿No tienes cuenta? ",
+      "registro" : "Registrate Aquí",
+      "pregunta_login": "¿Ya tienes cuenta? Inicia sesión"
     }
   },
   en: {
     translation: {
+      //CATALOGO
       "titulo": "Plant Catalog",
       "buscar": "Search plant by name...",
       "carrito": "Cart",
@@ -47,11 +62,25 @@ const resources = {
       "sombra": "Shade",
       "agregar_carrito": "+ Add to Cart",
       "agotado": "Out of stock",
-      "mostrando": "Showing {{count}} plants"
+      "mostrando": "Showing {{count}} plants",
+      //LOGIN Y REGISTRO
+      "saludo" : "Cultivate your world",
+      "iniciar_sesion": "Sign In",
+      "registrarse": "Sign Up",
+      "correo": "Email Address",
+      "contrasena": "Password",
+      "confirmar_contrasena": "Confirm Password",
+      "nombre_usuario": "Username",
+      "boton_ingresar": "Login",
+      "boton_crear": "Create Account",
+      "pregunta_registro": "Don't have an account?",
+      "registro" : "Register here",
+      "pregunta_login": "Already have an account? Sign in"
     }
   },
   ja: {
     translation: {
+      //CATALOGO
       "titulo": "植物カタログ",
       "buscar": "名前で植物を検索...",
       "carrito": "買い物かご",
@@ -71,7 +100,20 @@ const resources = {
       "sombra": "日陰",
       "agregar_carrito": "+ かごに追加",
       "agotado": "売り切れ",
-      "mostrando": "{{count}}個の植物を表示中"
+      "mostrando": "{{count}}個の植物を表示中",
+      //LOGIN Y REGISTRO
+      "saludo" : "あなたの世界を育む",
+      "iniciar_sesion": "ログイン",
+      "registrarse": "新規登録",
+      "correo": "メールアドレス",
+      "contrasena": "パスワード",
+      "confirmar_contrasena": "パスワード再入力",
+      "nombre_usuario": "ユーザー名",
+      "boton_ingresar": "ログインする",
+      "boton_crear": "アカウント作成",
+      "pregunta_registro": "アカウントをお持ちでないですか？",
+      "registro": "新規登録へ",
+      "pregunta_login": "既にアカウントをお持ちですか？ログインへ"
     }
   }
 }; 

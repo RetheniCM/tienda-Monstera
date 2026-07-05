@@ -1,10 +1,13 @@
 import React, { useState } from 'react';
 import axios from 'axios';
 import { Link, useNavigate } from 'react-router-dom';
-// IMPORTAMOS EL LOGO QUE GUARDASTE
+import { useTranslation } from 'react-i18next';
 import logoMonstera from '../assets/log_monstera.png';
 
 function Login() {
+  
+  const { t, i18n} = useTranslation();
+
   const navigate = useNavigate();
   const [correo, setCorreo] = useState('');
   const [contrasena, setContrasena] = useState('');
@@ -54,6 +57,30 @@ function Login() {
           {/* Mantenemos el nombre de la marca en texto */}
           <span className="serif-font" style={{ fontSize: '22px', fontWeight: 'bold', letterSpacing: '0.5px' }}>Monstera</span>
         </div>
+
+{/* SELECTOR DE IDIOMAS FLOTANTE EN LA ESQUINA */}
+    <div style={{ position: 'absolute', top: '20px', right: '40px', display: 'flex', gap: '12px', alignItems: 'center' }} role="navigation" aria-label="Selección de idioma">
+      <button 
+        onClick={() => i18n.changeLanguage('es')} 
+        style={{ fontWeight: i18n.language === 'es' ? '700' : '400', cursor: 'pointer', background: 'none', border: 'none', color: '#19381f', fontSize: '14px', padding: '5px' }}
+      >
+        🇲🇽 ES
+      </button>
+      <span style={{ color: '#ccc' }} aria-hidden="true">|</span>
+      <button 
+        onClick={() => i18n.changeLanguage('en')} 
+        style={{ fontWeight: i18n.language === 'en' ? '700' : '400', cursor: 'pointer', background: 'none', border: 'none', color: '#19381f', fontSize: '14px', padding: '5px' }}
+      >
+        🇺🇸 EN
+      </button>
+      <span style={{ color: '#ccc' }} aria-hidden="true">|</span>
+      <button 
+        onClick={() => i18n.changeLanguage('ja')} 
+        style={{ fontWeight: i18n.language === 'ja' ? '700' : '400', cursor: 'pointer', background: 'none', border: 'none', color: '#19381f', fontSize: '14px', padding: '5px' }}
+      >
+        🇯🇵 JA
+      </button>
+    </div>
       </header>
 
       {/* CONTENIDO CENTRAL */}
@@ -69,15 +96,15 @@ function Login() {
         {/* TARJETA DE LOGIN */}
         <section aria-labelledby="login-title" style={{ background: '#ffffff', width: '100%', maxWidth: '460px', padding: '40px 45px', borderRadius: '16px', boxShadow: '0 10px 30px rgba(0, 0, 0, 0.04)', border: '1px solid rgba(230, 227, 221, 0.6)' }}>
           
-          <h2 id="login-title" style={{ textAlign: 'center', fontSize: '32px', marginBottom: '6px', fontWeight: '700' }}>Iniciar Sesión</h2>
-          <p style={{ fontFamily: 'Georgia, serif', fontStyle: 'italic', color: '#8b5a42', textAlign: 'center', marginBottom: '30px', fontSize: '15px' }}>Cultiva tu mundo</p>
+          <h2 id="login-title" style={{ textAlign: 'center', fontSize: '32px', marginBottom: '6px', fontWeight: '700' }}>{t('iniciar_sesion')}</h2>
+          <p style={{ fontFamily: 'Georgia, serif', fontStyle: 'italic', color: '#8b5a42', textAlign: 'center', marginBottom: '30px', fontSize: '15px' }}>{t('saludo')}</p>
 
           <form onSubmit={manejarLogin}>
             
             {/* Campo Correo */}
             <div style={{ marginBottom: '24px' }}>
               <label htmlFor="correo-input" style={{ display: 'block', marginBottom: '8px', fontSize: '14px', fontWeight: '600', color: '#2d4a30' }}>
-                Correo Electrónico
+                {t('correo')}
               </label>
               <input 
                 id="correo-input"
@@ -94,8 +121,7 @@ function Login() {
             {/* Campo Contraseña */}
             <div style={{ marginBottom: '30px' }}>
               <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: '8px' }}>
-                <label htmlFor="contrasena-input" style={{ fontSize: '14px', fontWeight: '600', color: '#2d4a30' }}>Contraseña</label>
-                <a href="#olvide" style={{ fontSize: '13px', color: '#8b5a42', textDecoration: 'none' }}>¿Olvidaste tu contraseña?</a>
+                <label htmlFor="contrasena-input" style={{ fontSize: '14px', fontWeight: '600', color: '#2d4a30' }}>{t('contrasena')}</label>
               </div>
               <input 
                 id="contrasena-input"
@@ -110,7 +136,7 @@ function Login() {
             </div>
 
             <button type="submit" style={{ width: '100%', padding: '14px', backgroundColor: '#19381f', color: '#ffffff', border: 'none', borderRadius: '8px', fontSize: '14px', fontWeight: '700', letterSpacing: '1px', cursor: 'pointer' }}>
-              ENTRAR AL SANTUARIO
+              {t('boton_ingresar')}
             </button>
           </form>
 
@@ -137,7 +163,7 @@ function Login() {
               <div style={{ flex: 1, height: '1px', backgroundColor: '#eae7e1' }}></div>
             </div>
             <p style={{ fontSize: '14px', color: '#555' }}>
-               ¿No tienes cuenta? <Link to="/registro" style={{ color: '#19381f', fontWeight: '700', textDecoration: 'underline' }}>Regístrate aquí</Link>
+               {t('pregunta_registro')}<Link to="/registro" style={{ color: '#19381f', fontWeight: '700', textDecoration: 'underline' }}>{t('registro')}</Link>
             </p>
           </div>
 
