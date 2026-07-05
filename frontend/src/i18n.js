@@ -45,7 +45,44 @@ const resources = {
       //PLACEHOLDERS
       "nombre_aqui" : "Tu nombre completo",
       "correo_aqui" : "tu@correo.com",
-      "men_cont" : "Minimo 6 caracteres"
+      "men_cont" : "Minimo 6 caracteres",
+
+
+      // ... anteriores ...
+      "monstera_admin": "Monstera Admin",
+      "salir": "Salir",
+      "panel_control": "Panel de Control",
+      "subtitulo_vivero": "Gestión de inventario del vivero",
+      
+      // MÁTRICAS CARD
+      "card_productos": "PRODUCTOS",
+      "card_registrados": "registrados",
+      "card_unidades": "UNIDADES EN STOCK",
+      "card_disponibles": "disponibles",
+      "card_valor": "VALOR DEL INVENTARIO",
+      "card_total": "valor total",
+      "card_stock_bajo": "STOCK BAJO",
+      "card_criticos": "productos críticos",
+      
+      // CONTROLES Y BUSCADOR
+      "placeholder_buscar_dashboard": "Buscar por nombre o especie...",
+      "btn_categorias": "Categorías",
+      "btn_tabla": "Tabla",
+      "btn_tarjetas": "Tarjetas",
+      "btn_agregar_producto": "+ Agregar Producto",
+      
+      // COLUMNAS TABLA
+      "col_id": "ID",
+      "col_producto": "PRODUCTO",
+      "col_categoria": "CATEGORÍA",
+      "col_precio": "PRECIO",
+      "col_stock": "STOCK",
+      "col_acciones": "ACCIONES",
+      "uds": "uds.",
+      
+      // CATEGORÍAS ADICIONALES DEL CRUD
+      "herramientas": "Herramientas",
+      "tierra_abonos": "Tierra/Abonos"
     }
   },
   en: {
@@ -91,9 +128,47 @@ const resources = {
       //PLACEHOLDERS
       "nombre_aqui" : "Your full name",
       "correo_aqui" : "your@email.com",
-      "men_cont" : "Minimum of 6 characters"
+      "men_cont" : "Minimum of 6 characters",
+
+
+      // ... anteriores ...
+      "monstera_admin": "Monstera Admin",
+      "salir": "Log Out",
+      "panel_control": "Dashboard",
+      "subtitulo_vivero": "Nursery inventory management",
+      
+      // MÁTRICAS CARD
+      "card_productos": "PRODUCTS",
+      "card_registrados": "registered",
+      "card_unidades": "UNIDADES IN STOCK",
+      "card_disponibles": "available",
+      "card_valor": "INVENTORY VALUE",
+      "card_total": "total value",
+      "card_stock_bajo": "LOW STOCK",
+      "card_criticos": "critical items",
+      
+      // CONTROLES Y BUSCADOR
+      "placeholder_buscar_dashboard": "Search by name or species...",
+      "btn_categorias": "Categories",
+      "btn_tabla": "Table",
+      "btn_tarjetas": "Cards",
+      "btn_agregar_producto": "+ Add Product",
+      
+      // COLUMNAS TABLA
+      "col_id": "ID",
+      "col_producto": "PRODUCTO",
+      "col_categoria": "CATEGORY",
+      "col_precio": "PRICE",
+      "col_stock": "STOCK",
+      "col_acciones": "ACTIONS",
+      "uds": "units",
+      
+      // CATEGORÍAS ADICIONALES DEL CRUD
+      "herramientas": "Tools",
+      "tierra_abonos": "Soil/Fertilizer"
     }
   },
+
   ja: {
     translation: {
       //CATALOGO
@@ -137,7 +212,43 @@ const resources = {
       //PLACEHOLDERS
       "nombre_aqui" : "氏名（フルネーム）",
       "correo_aqui" : "your@email.com",
-      "men_cont" : "6文字以上"
+      "men_cont" : "6文字以上",
+
+      // ... anteriores ...
+      "monstera_admin": "Monstera 管理",
+      "salir": "ログアウト",
+      "panel_control": "管理パネル",
+      "subtitulo_vivero": "苗木屋の在庫管理",
+      
+      // MÁTRICAS CARD
+      "card_productos": "製品数",
+      "card_registrados": "登録済み",
+      "card_unidades": "総在庫数",
+      "card_disponibles": "利用可能",
+      "card_valor": "在庫総資産",
+      "card_total": "総額",
+      "card_stock_bajo": "在庫僅少",
+      "card_criticos": "危険水準の製品",
+      
+      // CONTROLES Y BUSCADOR
+      "placeholder_buscar_dashboard": "名前または種類で検索...",
+      "btn_categorias": "カテゴリ",
+      "btn_tabla": "テーブル",
+      "btn_tarjetas": "カード表示",
+      "btn_agregar_producto": "+ 製品を追加",
+      
+      // COLUMNAS TABLA
+      "col_id": "ID",
+      "col_producto": "製品名",
+      "col_categoria": "カテゴリ",
+      "col_precio": "価格",
+      "col_stock": "在庫",
+      "col_acciones": "操作",
+      "uds": "個",
+      
+      // CATEGORÍAS ADICIONALES DEL CRUD
+      "herramientas": "工具・道具",
+      "tierra_abonos": "土・肥料"
     }
   }
 }; 

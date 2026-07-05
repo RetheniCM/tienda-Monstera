@@ -16,7 +16,7 @@ function Catalogo() {
   const [cargando, setCargando] = useState(true);
 
   // 2. ESTADOS DE FILTROS
-  const [filtrosCategoria, setFiltrosCategoria] = useState({ Interior: false, Exterior: false });
+  const [filtrosCategoria, setFiltrosCategoria] = useState({ Interior: false, Exterior: false, Herramientas: false, Abono: false });
   const [filtrosRiego, setFiltrosRiego] = useState({ Bajo: false, Moderado: false, Frecuente: false });
   const [filtrosLuz, setFiltrosLuz] = useState({ 'Sol Directo': false, 'Luz Indirecta': false, Sombra: false });
 
@@ -70,22 +70,25 @@ function Catalogo() {
   };
 
   // 5. LÓGICA DE FILTRADO LIMPIA
-  const productosFiltrados = plantas.filter((planta) => {
-    const coincideBusqueda = 
-      (planta.nombre || '').toLowerCase().includes(busqueda.toLowerCase()) || 
-      (planta.nombreCientifico || '').toLowerCase().includes(busqueda.toLowerCase());
+const productosFiltrados = plantas.filter((planta) => {
 
-    const algunaCategoriaActiva = filtrosCategoria.Interior || filtrosCategoria.Exterior;
-    const coincideCategoria = !algunaCategoriaActiva || filtrosCategoria[planta.categoria];
+const coincideBusqueda = 
+    (planta.nombre || '').toLowerCase().includes(busqueda.toLowerCase()) ||
+    (planta.nombreCientifico || '').toLowerCase().includes(busqueda.toLowerCase());
 
-    const algunRiegoActivo = filtrosRiego.Bajo || filtrosRiego.Moderado || filtrosRiego.Frecuente;
-    const coincideRiego = !algunRiegoActivo || filtrosRiego[planta.riego];
+  const algunaCategoriaActiva = filtrosCategoria.Interior || filtrosCategoria.Exterior || filtrosCategoria.Herramientas || filtrosCategoria.Abono;
+  const coincideCategoria = !algunaCategoriaActiva || filtrosCategoria[planta.categoria];
 
-    const algunaLuzActiva = filtrosLuz['Sol Directo'] || filtrosLuz['Luz Indirecta'] || filtrosLuz.Sombra;
-    const coincideLuz = !algunaLuzActiva || filtrosLuz[planta.luz];
+  const algunRiegoActivo = filtrosRiego.Bajo || filtrosRiego.Moderado || filtrosRiego.Frecuente;
+  // MODIFICA ESTA LÍNEA: Si planta.riego no existe o es NULL, pasa en automático si no hay filtros activos
+  const coincideRiego = !algunRiegoActivo || (planta.riego && filtrosRiego[planta.riego]);
 
-    return coincideBusqueda && coincideCategoria && coincideRiego && coincideLuz;
-  });
+  const algunaLuzActiva = filtrosLuz['Sol Directo'] || filtrosLuz['Luz Indirecta'] || filtrosLuz.Sombra;
+  // MODIFICA ESTA LÍNEA: Si planta.luz no existe o es NULL, pasa en automático si no hay filtros activos
+  const coincideLuz = !algunaLuzActiva || (planta.luz && filtrosLuz[planta.luz]);
+
+  return coincideBusqueda && coincideCategoria && coincideRiego && coincideLuz;
+});
 
   return (
     <div style={{ minHeight: '100vh', backgroundColor: '#fbfaf7', color: '#19381f', fontFamily: 'system-ui, sans-serif' }}>
@@ -167,6 +170,12 @@ function Catalogo() {
                 <label style={{ display: 'flex', alignItems: 'center', gap: '10px', cursor: 'pointer' }}>
                   <input type="checkbox" name="Exterior" checked={filtrosCategoria.Exterior} onChange={manejarCambioCategoria} style={{ accentColor: '#19381f' }} /> {t('exterior')}
                 </label>
+                <label style={{ display: 'flex', alignItems: 'center', gap: '10px', cursor: 'pointer' }}>
+                  <input type="checkbox" name="Herramientas" checked={filtrosCategoria.Herramientas} onChange={manejarCambioCategoria} style={{ accentColor: '#19381f' }} /> {t('herramientas')}
+                </label>
+                <label style={{ display: 'flex', alignItems: 'center', gap: '10px', cursor: 'pointer' }}>
+                  <input type="checkbox" name="Abono" checked={filtrosCategoria.Abono} onChange={manejarCambioCategoria} style={{ accentColor: '#19381f' }} /> {t('tierra_abonos')}
+                </label>
             </div>
           </fieldset>
 
@@ -241,18 +250,32 @@ function Catalogo() {
 
                   <div style={{ padding: '20px', display: 'flex', flexDirection: 'column', flex: 1 }}>
                     <h2 style={{ fontSize: '19px', margin: '0 0 4px 0', color: '#19381f', fontWeight: '700' }}>{planta.nombre}</h2>
-                    <p style={{ fontStyle: 'italic', fontSize: '13px', color: '#8b5a42', margin: '0 0 15px 0' }}>
-                      <span style={{ position: 'absolute', width: '1px', height: '1px', padding: 0, margin: '-1px', overflow: 'hidden', clip: 'rect(0, 0, 0, 0)', border: 0 }}>Nombre científico: </span>
-                      {planta.nombreCientifico}
-                    </p>
+                    
+                    {planta.nombreCientifico && planta.nombreCientifico !== 'No aplica' && (
+                      <p style={{ fontStyle: 'italic', fontSize: '13px', color: '#8b5a42', margin: '0 0 15px 0' }}>
+                        <span style={{ position: 'absolute', width: '1px', height: '1px', padding: 0, margin: '-1px', overflow: 'hidden', clip: 'rect(0, 0, 0, 0)', border: 0 }}>
+                          Nombre científico:
+                        </span>
+                        {planta.nombreCientifico}
+                      </p>
+                    )}
                     
                     <div style={{ display: 'flex', gap: '8px', marginBottom: '20px', flexWrap: 'wrap' }}>
-                      <span style={{ backgroundColor: '#ced7cc', color: '#19381f', padding: '4px 10px', borderRadius: '6px', fontSize: '11px', fontWeight: '600' }}>
-                        {planta.luz}
-                      </span>
-                      <span style={{ backgroundColor: '#f0e6d2', color: '#8b5a42', padding: '4px 10px', borderRadius: '6px', fontSize: '11px', fontWeight: '600' }}>
-                        {planta.riego}
-                      </span>
+  
+                      {/* ETIQUETA DE LUZ: Solo aparece si existe y no es "No aplica" */}
+                      {planta.luz && planta.luz !== 'No aplica' && (
+                        <span style={{ backgroundColor: '#ced7cc', color: '#19381f', padding: '4px 10px', borderRadius: '6px', fontSize: '11px', fontWeight: '600' }}>
+                          {t(planta.luz.toLowerCase().replace(' ', '_'))}
+                        </span>
+                      )}
+
+                      {/* ETIQUETA DE RIEGO: Solo aparece si existe y no es "No aplica" */}
+                      {planta.riego && planta.riego !== 'No aplica' && (
+                        <span style={{ backgroundColor: '#f0e6d2', color: '#8b5a42', padding: '4px 10px', borderRadius: '6px', fontSize: '11px', fontWeight: '600' }}>
+                          {t(planta.riego.toLowerCase())}
+                        </span>
+                      )}
+
                     </div>
 
                     <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginTop: 'auto' }}>
