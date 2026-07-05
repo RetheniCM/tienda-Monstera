@@ -1,9 +1,11 @@
 import React, { useState } from 'react';
 import axios from 'axios';
+import { useTranslation } from 'react-i18next';
 import logoMonstera from '../assets/log_monstera.png';
 import { Link } from 'react-router-dom';
 
 function Registro() {
+  const { t, i18n} = useTranslation();
   const [nombre, setNombre] = useState('');
   const [correo, setCorreo] = useState('');
   const [contrasena, setContrasena] = useState('');
@@ -49,6 +51,29 @@ function Registro() {
           />
           <span className="serif-font" style={{ fontSize: '22px', fontWeight: 'bold', letterSpacing: '0.5px' }}>Monstera</span>
         </div>
+            {/* SELECTOR DE IDIOMAS FLOTANTE EN LA ESQUINA */}
+    <div style={{ position: 'absolute', top: '20px', right: '40px', display: 'flex', gap: '12px', alignItems: 'center' }} role="navigation" aria-label="Selección de idioma">
+      <button 
+        onClick={() => i18n.changeLanguage('es')} 
+        style={{ fontWeight: i18n.language === 'es' ? '700' : '400', cursor: 'pointer', background: 'none', border: 'none', color: '#19381f', fontSize: '14px', padding: '5px' }}
+      >
+        🇲🇽 ES
+      </button>
+      <span style={{ color: '#ccc' }} aria-hidden="true">|</span>
+      <button 
+        onClick={() => i18n.changeLanguage('en')} 
+        style={{ fontWeight: i18n.language === 'en' ? '700' : '400', cursor: 'pointer', background: 'none', border: 'none', color: '#19381f', fontSize: '14px', padding: '5px' }}
+      >
+        🇺🇸 EN
+      </button>
+      <span style={{ color: '#ccc' }} aria-hidden="true">|</span>
+      <button 
+        onClick={() => i18n.changeLanguage('ja')} 
+        style={{ fontWeight: i18n.language === 'ja' ? '700' : '400', cursor: 'pointer', background: 'none', border: 'none', color: '#19381f', fontSize: '14px', padding: '5px' }}
+      >
+        🇯🇵 JA
+      </button>
+    </div>
       </header>
 
       {/* CONTENIDO CENTRAL */}
@@ -64,20 +89,20 @@ function Registro() {
         {/* TARJETA DE REGISTRO */}
         <section aria-labelledby="registro-title" style={{ background: '#ffffff', width: '100%', maxWidth: '460px', padding: '40px 45px', borderRadius: '16px', boxShadow: '0 10px 30px rgba(0, 0, 0, 0.04)', border: '1px solid rgba(230, 227, 221, 0.6)' }}>
           
-          <h2 id="registro-title" style={{ textAlign: 'center', fontSize: '32px', marginBottom: '6px', fontWeight: '700' }}>Crear Cuenta</h2>
-          <p style={{ fontFamily: 'Georgia, serif', fontStyle: 'italic', color: '#8b5a42', textAlign: 'center', marginBottom: '30px', fontSize: '15px' }}>Únete a nuestro santuario</p>
+          <h2 id="registro-title" style={{ textAlign: 'center', fontSize: '32px', marginBottom: '6px', fontWeight: '700' }}>{t('crear')}</h2>
+          <p style={{ fontFamily: 'Georgia, serif', fontStyle: 'italic', color: '#8b5a42', textAlign: 'center', marginBottom: '30px', fontSize: '15px' }}>{t('men_bienvenida')}</p>
 
           <form onSubmit={manejarRegistro}>
             
             {/* Campo Nombre */}
             <div style={{ marginBottom: '24px' }}>
               <label htmlFor="nombre-input" style={{ display: 'block', marginBottom: '8px', fontSize: '14px', fontWeight: '600', color: '#2d4a30' }}>
-                Nombre Completo
+                {t('nombre_usuario')}
               </label>
               <input 
                 id="nombre-input"
                 type="text" 
-                placeholder="Tu nombre completo"
+                placeholder={t('nombre_aqui')}
                 value={nombre} 
                 onChange={(e) => setNombre(e.target.value)} 
                 required 
@@ -89,12 +114,12 @@ function Registro() {
             {/* Campo Correo */}
             <div style={{ marginBottom: '24px' }}>
               <label htmlFor="correo-input" style={{ display: 'block', marginBottom: '8px', fontSize: '14px', fontWeight: '600', color: '#2d4a30' }}>
-                Correo Electrónico
+                {t('correo')}
               </label>
               <input 
                 id="correo-input"
                 type="email" 
-                placeholder="tu@correo.com"
+                placeholder={t('correo_aqui')}
                 value={correo} 
                 onChange={(e) => setCorreo(e.target.value)} 
                 required 
@@ -108,12 +133,12 @@ function Registro() {
             {/* Campo Contraseña */}
             <div style={{ marginBottom: '30px' }}>
               <label htmlFor="contrasena-input" style={{ display: 'block', marginBottom: '8px', fontSize: '14px', fontWeight: '600', color: '#2d4a30' }}>
-                Contraseña
+                {t('contrasena')}
               </label>
               <input 
                 id="contrasena-input"
                 type="password" 
-                placeholder="Mínimo 6 caracteres"
+                placeholder={t('men_cont')}
                 value={contrasena} 
                 onChange={(e) => setContrasena(e.target.value)} 
                 required 
@@ -125,7 +150,7 @@ function Registro() {
             </div>
 
             <button type="submit" style={{ width: '100%', padding: '14px', backgroundColor: '#19381f', color: '#ffffff', border: 'none', borderRadius: '8px', fontSize: '14px', fontWeight: '700', letterSpacing: '1px', cursor: 'pointer' }}>
-              UNIRSE AL SANTUARIO
+              {t('boton_crear')}
             </button>
           </form>
 
@@ -153,7 +178,7 @@ function Registro() {
               <div style={{ flex: 1, height: '1px', backgroundColor: '#eae7e1' }}></div>
             </div>
             <p style={{ fontSize: '14px', color: '#555' }}>
-              ¿Ya tienes cuenta? <Link to="/login" style={{ color: '#19381f', fontWeight: '700', textDecoration: 'underline' }}>Inicia sesión aquí</Link>
+              {t('pregunta_login')} <Link to="/login" style={{ color: '#19381f', fontWeight: '700', textDecoration: 'underline' }}>{t('Iniciar')}</Link>
             </p>
           </div>
 

@@ -58,7 +58,7 @@ function Login() {
           <span className="serif-font" style={{ fontSize: '22px', fontWeight: 'bold', letterSpacing: '0.5px' }}>Monstera</span>
         </div>
 
-{/* SELECTOR DE IDIOMAS FLOTANTE EN LA ESQUINA */}
+    {/* SELECTOR DE IDIOMAS FLOTANTE EN LA ESQUINA */}
     <div style={{ position: 'absolute', top: '20px', right: '40px', display: 'flex', gap: '12px', alignItems: 'center' }} role="navigation" aria-label="Selección de idioma">
       <button 
         onClick={() => i18n.changeLanguage('es')} 
@@ -109,7 +109,7 @@ function Login() {
               <input 
                 id="correo-input"
                 type="email" 
-                placeholder="tu@correo.com"
+                placeholder={t('correo_aqui')}
                 value={correo} 
                 onChange={(e) => setCorreo(e.target.value)} 
                 required 

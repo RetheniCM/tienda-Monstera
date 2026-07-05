@@ -34,10 +34,18 @@ const resources = {
       "confirmar_contrasena": "Confirmar Contraseña",
       "nombre_usuario": "Nombre de Usuario",
       "boton_ingresar": "Ingresar",
-      "boton_crear": "Crear Cuenta",
+      "boton_crear": "Registrar",
+      "crear" : "Crear Cuenta",
+      "men_bienvenida" : "Únete a nuestro vivero",
       "pregunta_registro": "¿No tienes cuenta? ",
       "registro" : "Registrate Aquí",
-      "pregunta_login": "¿Ya tienes cuenta? Inicia sesión"
+      "pregunta_login": "¿Ya tienes cuenta?",
+      "Iniciar" : "Inicia sesión aquí",
+
+      //PLACEHOLDERS
+      "nombre_aqui" : "Tu nombre completo",
+      "correo_aqui" : "tu@correo.com",
+      "men_cont" : "Minimo 6 caracteres"
     }
   },
   en: {
@@ -73,9 +81,17 @@ const resources = {
       "nombre_usuario": "Username",
       "boton_ingresar": "Login",
       "boton_crear": "Create Account",
+      "crear" : "Create Account",
+      "men_bienvenida" : "Join our nursery",
       "pregunta_registro": "Don't have an account?",
       "registro" : "Register here",
-      "pregunta_login": "Already have an account? Sign in"
+      "pregunta_login": "Already have an account? ",
+      "Iniciar" : "Sign in",
+
+      //PLACEHOLDERS
+      "nombre_aqui" : "Your full name",
+      "correo_aqui" : "your@email.com",
+      "men_cont" : "Minimum of 6 characters"
     }
   },
   ja: {
@@ -111,9 +127,17 @@ const resources = {
       "nombre_usuario": "ユーザー名",
       "boton_ingresar": "ログインする",
       "boton_crear": "アカウント作成",
+      "crear" : "アカウントを作成する",
+      "men_bienvenida" : "当園への入園をご検討ください",
       "pregunta_registro": "アカウントをお持ちでないですか？",
       "registro": "新規登録へ",
-      "pregunta_login": "既にアカウントをお持ちですか？ログインへ"
+      "pregunta_login": "既にアカウントをお持ちですか？",
+      "Iniciar" : "ログインへ",
+
+      //PLACEHOLDERS
+      "nombre_aqui" : "氏名（フルネーム）",
+      "correo_aqui" : "your@email.com",
+      "men_cont" : "6文字以上"
     }
   }
 }; 
