@@ -1,38 +1,43 @@
 import React, { useState } from 'react';
 import axios from 'axios';
+import { Link, useNavigate } from 'react-router-dom';
 // IMPORTAMOS EL LOGO QUE GUARDASTE
 import logoMonstera from '../assets/log_monstera.png';
-import { Link } from 'react-router-dom';
 
 function Login() {
+  const navigate = useNavigate();
   const [correo, setCorreo] = useState('');
   const [contrasena, setContrasena] = useState('');
   const [mensaje, setMensaje] = useState('');
   // Bandera para saber si hay un error y ajustar la UX
   const [errorStatus, setErrorStatus] = useState(false);
 
-  const manejarLogin = async (e) => {
-    e.preventDefault();
-    // Reseteamos el estado de error antes de cada intento
-    setErrorStatus(false); 
-    try {
-      const respuesta = await axios.post('http://localhost:5000/api/auth/login', {
-        correo,
-        contrasena
-      });
-      // LOGIN EXITOSO
-      setMensaje(`¡Bienvenido! Acceso correcto.`);
-      console.log('Datos:', respuesta.data);
-    } catch (error) {
-      // LOGIN FALLIDO
-      setErrorStatus(true); // Activamos la bandera de error
-      if (error.response && error.response.data) {
-        setMensaje(error.response.data.error || 'Error al iniciar sesión');
-      } else {
-        setMensaje('No se pudo conectar con el servidor backend');
-      }
+ const manejarLogin = async (e) => {
+  e.preventDefault();
+  setErrorStatus(false); 
+  try {
+    const respuesta = await axios.post('http://localhost:5000/api/auth/login', {
+      correo,
+      contrasena
+    });
+
+    setMensaje(`¡Bienvenido! Acceso correcto.`);
+    console.log('Datos:', respuesta.data);
+
+    // REDIRECCIÓN: Esperamos 1 segundo para que el usuario vea el éxito y lo mandamos
+    setTimeout(() => {
+      navigate('/catalogo');
+    }, 1000);
+
+  } catch (error) {
+    setErrorStatus(true);
+    if (error.response && error.response.data) {
+      setMensaje(error.response.data.error || 'Error al iniciar sesión');
+    } else {
+      setMensaje('No se pudo conectar con el servidor backend');
     }
-  };
+  }
+};
 
   return (
     <div style={{ minHeight: '100vh', display: 'flex', flexDirection: 'column' }}>

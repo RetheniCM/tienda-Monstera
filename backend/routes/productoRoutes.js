@@ -79,4 +79,15 @@ router.delete('/:id', async (req, res) => {
   }
 });
 
+router.get('/productos', async (req, res) => {
+  try {
+    // Usamos la conexión a la base de datos que ya tienes importada arriba
+    const [rows] = await db.query('SELECT * FROM productos');
+    res.status(200).json(rows);
+  } catch (error) {
+    console.error("Error en la consulta de MySQL:", error);
+    res.status(500).json({ error: "Error al obtener los productos de la base de datos" });
+  }
+});
+
 module.exports = router;
