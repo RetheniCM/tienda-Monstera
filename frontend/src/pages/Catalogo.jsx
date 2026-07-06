@@ -262,21 +262,21 @@ const coincideBusqueda =
                     
                     <div style={{ display: 'flex', gap: '8px', marginBottom: '20px', flexWrap: 'wrap' }}>
   
-                      {/* ETIQUETA DE LUZ: Solo aparece si existe y no es "No aplica" */}
-                      {planta.luz && planta.luz !== 'No aplica' && (
-                        <span style={{ backgroundColor: '#ced7cc', color: '#19381f', padding: '4px 10px', borderRadius: '6px', fontSize: '11px', fontWeight: '600' }}>
-                          {t(planta.luz.toLowerCase().replace(' ', '_'))}
-                        </span>
-                      )}
+                    {/* ETIQUETA DE LUZ: Solo aparece si existe y no es "No aplica" */}
+                    {planta.luz && planta.luz !== 'No aplica' && (
+                      <span style={{ backgroundColor: '#ced7cc', color: '#19381f', padding: '4px 10px', borderRadius: '6px', fontSize: '11px', fontWeight: '600' }}>
+                        {t(planta.luz.toLowerCase().replace(' ', '_'))}
+                      </span>
+                    )}
 
-                      {/* ETIQUETA DE RIEGO: Solo aparece si existe y no es "No aplica" */}
-                      {planta.riego && planta.riego !== 'No aplica' && (
-                        <span style={{ backgroundColor: '#f0e6d2', color: '#8b5a42', padding: '4px 10px', borderRadius: '6px', fontSize: '11px', fontWeight: '600' }}>
-                          {t(planta.riego.toLowerCase())}
-                        </span>
-                      )}
+                    {/* ETIQUETA DE RIEGO: Solo aparece si existe y no es "No aplica" */}
+                    {planta.riego && planta.riego !== 'No aplica' && (
+                      <span style={{ backgroundColor: '#f0e6d2', color: '#8b5a42', padding: '4px 10px', borderRadius: '6px', fontSize: '11px', fontWeight: '600' }}>
+                        {t(planta.riego.toLowerCase())}
+                      </span>
+                    )}
 
-                    </div>
+                  </div>
 
                     <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginTop: 'auto' }}>
                       <span style={{ fontSize: '18px', fontWeight: '700', color: '#19381f' }}>

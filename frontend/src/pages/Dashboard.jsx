@@ -6,7 +6,8 @@ function Dashboard() {
   // 1. ESTADOS PRINCIPALES
   const [productos, setProductos] = useState([]);
   const [busqueda, setBusqueda] = useState('');
-  
+  const [menuCategoriasOpen, setMenuCategoriasOpen] = useState(false);
+  const [categoriaSeleccionada, setCategoriaSeleccionada] = useState('Todas');
   // Estados para métricas
   const [totalProductos, setTotalProductos] = useState(0);
   const [totalStock, setTotalStock] = useState(0);
@@ -102,10 +103,17 @@ function Dashboard() {
   };
 
   // 4. FILTRADO PARA EL BUSCADOR
-  const productosFiltrados = productos.filter((p) => 
-    (p.nombre_comun || '').toLowerCase().includes(busqueda.toLowerCase()) ||
-    (p.nombre_cienti || '').toLowerCase().includes(busqueda.toLowerCase())
-  );
+    const productosFiltrados = productos.filter((p) => {
+    const coincideBusqueda = 
+        (p.nombre_comun || '').toLowerCase().includes(busqueda.toLowerCase()) ||
+        (p.nombre_cienti || '').toLowerCase().includes(busqueda.toLowerCase());
+        
+    const coincideCategoria = 
+        categoriaSeleccionada === 'Todas' || 
+        (p.categoria && p.categoria.toLowerCase() === categoriaSeleccionada.toLowerCase());
+
+    return coincideBusqueda && coincideCategoria;
+    });
 
   // Funciones auxiliares para abrir modales limpian o cargan el estado
   const abrirModalAgregar = () => {
@@ -131,12 +139,12 @@ function Dashboard() {
     <div style={{ backgroundColor: '#faf9f5', minHeight: '100vh', fontFamily: 'system-ui, sans-serif' }}>
       
       {/* HEADER SUPERIOR */}
-      <header style={{color: 'black', padding: '15px 40px', display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+      <header style={{color: 'black', padding: '20px 40px', display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
         <div style={{ display: 'flex', alignItems: 'center', gap: '12px' }}>
           <img src={logoMonstera} alt="Monstera - Logotipo de la tienda de plantas" style={{ height: '35px', width: 'auto' }} />
           <span style={{ fontSize: '24px', fontWeight: 'bold', color: '#1d3b24' }} aria-hidden="true">Monstera</span>
         </div>
-        <button style={{ background: 'none', border: 'none', color: 'white', display: 'flex', alignItems: 'center', gap: '6px', cursor: 'pointer', fontSize: '14px' }}>
+        <button style={{ background: 'none', border: 'none', color: 'black', display: 'flex', alignItems: 'center', gap: '6px', cursor: 'pointer', fontSize: '14px' }}>
           <span></span> Salir
         </button>
       </header>
@@ -179,7 +187,48 @@ function Dashboard() {
             onChange={(e) => setBusqueda(e.target.value)}
             style={{ flex: 1, padding: '12px 20px', borderRadius: '8px', border: '1px solid #eae6df', backgroundColor: '#eae6df', opacity: 0.6 }}
           />
-          <button style={{ padding: '10px 15px', borderRadius: '8px', border: '1px solid #1e4620', background: 'white', color: '#1e4620', cursor: 'pointer' }}>Categorías ▾</button>
+          <div style={{ position: 'relative', display: 'inline-block' }}>
+            <button 
+                type="button"
+                onClick={() => setMenuCategoriasOpen(!menuCategoriasOpen)}
+                style={{ padding: '10px 15px', borderRadius: '8px', border: '1px solid #1e4620', background: 'white', color: '#1e4620', cursor: 'pointer', fontWeight: '500', height: '100%', minWidth: '120px' }}
+            >
+                {categoriaSeleccionada === 'Todas' ? 'Categorías' : categoriaSeleccionada} ▾
+            </button>
+
+            {/* MENÚ DESPLEGABLE DINÁMICO */}
+            {menuCategoriasOpen && (
+                <div style={{ position: 'absolute', top: '100%', left: 0, marginTop: '5px', backgroundColor: 'white', border: '1px solid #eae6df', borderRadius: '8px', boxShadow: '0 4px 12px rgba(0,0,0,0.1)', zIndex: 100, width: '160px', overflow: 'hidden' }}>
+                
+                {/* Opción por defecto para limpiar el filtro */}
+                <button
+                    type="button"
+                    onClick={() => {
+                    setCategoriaSeleccionada('Todas');
+                    setMenuCategoriasOpen(false);
+                    }}
+                    style={{ display: 'block', width: '100%', padding: '10px 15px', border: 'none', background: categoriaSeleccionada === 'Todas' ? '#e2ece4' : 'white', color: '#132c15', textAlign: 'left', cursor: 'pointer', fontSize: '13px', fontWeight: categoriaSeleccionada === 'Todas' ? '600' : '400' }}
+                >
+                    Todas
+                </button>
+
+                {[...new Set(productos.map(p => p.categoria))].filter(Boolean).map((cat) => (
+                    <button
+                    key={cat}
+                    type="button"
+                    onClick={() => {
+                        setCategoriaSeleccionada(cat);
+                        setMenuCategoriasOpen(false);
+                    }}
+                    style={{ display: 'block', width: '100%', padding: '10px 15px', border: 'none', background: categoriaSeleccionada === cat ? '#e2ece4' : 'white', color: '#132c15', textAlign: 'left', cursor: 'pointer', fontSize: '13px', fontWeight: categoriaSeleccionada === cat ? '600' : '400' }}
+                    >
+                    {cat}
+                    </button>
+                ))}
+
+                </div>
+            )}
+            </div>
           <button style={{ padding: '10px 15px', borderRadius: '8px', backgroundColor: '#132c15', color: 'white', border: 'none', cursor: 'pointer' }}>Tabla</button>
           <button style={{ padding: '10px 15px', borderRadius: '8px', border: '1px solid #eae6df', background: 'white', cursor: 'pointer' }}>Tarjetas</button>
           <button onClick={abrirModalAgregar} style={{ padding: '10px 20px', borderRadius: '8px', backgroundColor: '#1e4620', color: 'white', border: 'none', cursor: 'pointer', fontWeight: '600' }}>
@@ -295,7 +344,7 @@ function Dashboard() {
                     <option value="Interior">Interior</option>
                     <option value="Exterior">Exterior</option>
                     <option value="Herramientas">Herramientas</option>
-                    <option value="Tierra/Abonos">Tierra/Abonos</option>
+                    <option value="Tierra/Abonos">Abono</option>
                     <option value="Macetas">Macetas</option>
                   </select>
                 </div>

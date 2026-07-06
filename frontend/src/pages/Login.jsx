@@ -15,32 +15,40 @@ function Login() {
   // Bandera para saber si hay un error y ajustar la UX
   const [errorStatus, setErrorStatus] = useState(false);
 
- const manejarLogin = async (e) => {
-  e.preventDefault();
-  setErrorStatus(false); 
-  try {
-    const respuesta = await axios.post('http://localhost:5000/api/auth/login', {
-      correo,
-      contrasena
-    });
+const manejarLogin = async (e) => {
+    e.preventDefault();
+    setErrorStatus(false); 
+    try {
+      const respuesta = await axios.post('http://localhost:5000/api/auth/login', {
+        correo,
+        contrasena
+      });
 
-    setMensaje(`¡Bienvenido! Acceso correcto.`);
-    console.log('Datos:', respuesta.data);
+      setMensaje(`¡Bienvenido! Acceso correcto.`);
+      console.log('Datos:', respuesta.data);
 
-    // REDIRECCIÓN: Esperamos 1 segundo para que el usuario vea el éxito y lo mandamos
-    setTimeout(() => {
-      navigate('/catalogo');
-    }, 1000);
+      const rolUsuario = respuesta.data.usuario?.rol || respuesta.data.rol;
+      if (rolUsuario) {
+        localStorage.setItem('rol', rolUsuario);
+      }
 
-  } catch (error) {
-    setErrorStatus(true);
-    if (error.response && error.response.data) {
-      setMensaje(error.response.data.error || 'Error al iniciar sesión');
-    } else {
-      setMensaje('No se pudo conectar con el servidor backend');
+      setTimeout(() => {
+        if (rolUsuario === 'admin') {
+          navigate('/admin/dashboard'); 
+        } else {
+          navigate('/catalogo'); 
+        }
+      }, 1000);
+
+    } catch (error) {
+      setErrorStatus(true);
+      if (error.response && error.response.data) {
+        setMensaje(error.response.data.error || 'Error al iniciar sesión');
+      } else {
+        setMensaje('No se pudo conectar con el servidor backend');
+      }
     }
-  }
-};
+  };
 
   return (
     <div style={{ minHeight: '100vh', display: 'flex', flexDirection: 'column' }}>
