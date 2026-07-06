@@ -16,39 +16,42 @@ function Login() {
   const [errorStatus, setErrorStatus] = useState(false);
 
 const manejarLogin = async (e) => {
-    e.preventDefault();
-    setErrorStatus(false); 
-    try {
-      const respuesta = await axios.post('http://localhost:5000/api/auth/login', {
-        correo,
-        contrasena
-      });
+  e.preventDefault();
+  setErrorStatus(false); 
+  try {
+    const respuesta = await axios.post('http://localhost:5000/api/auth/login', {
+      correo,
+      contrasena
+    });
 
-      setMensaje(`¡Bienvenido! Acceso correcto.`);
-      console.log('Datos:', respuesta.data);
+    setMensaje(`¡Bienvenido! Acceso correcto.`);
+    console.log('Datos que llegan del backend:', respuesta.data);
 
-      const rolUsuario = respuesta.data.usuario?.rol || respuesta.data.rol;
-      if (rolUsuario) {
-        localStorage.setItem('rol', rolUsuario);
-      }
-
-      setTimeout(() => {
-        if (rolUsuario === 'admin') {
-          navigate('/admin/dashboard'); 
-        } else {
-          navigate('/catalogo'); 
-        }
-      }, 1000);
-
-    } catch (error) {
-      setErrorStatus(true);
-      if (error.response && error.response.data) {
-        setMensaje(error.response.data.error || 'Error al iniciar sesión');
-      } else {
-        setMensaje('No se pudo conectar con el servidor backend');
-      }
+    // CORRECCIÓN AQUÍ: Tu backend manda 'rol' directo en la raíz de respuesta.data
+    const rolUsuario = respuesta.data.rol; 
+    
+    if (rolUsuario) {
+      localStorage.setItem('rol', rolUsuario);
     }
-  };
+
+    // REDIRECCIÓN: Esperamos 1 segundo y evaluamos el string exacto
+    setTimeout(() => {
+      if (rolUsuario === 'admin') {
+        navigate('/admin/dashboard');
+      } else {
+        navigate('/catalogo');
+      }
+    }, 1000);
+
+  } catch (error) {
+    setErrorStatus(true);
+    if (error.response && error.response.data) {
+      setMensaje(error.response.data.error || 'Error al iniciar sesión');
+    } else {
+      setMensaje('No se pudo conectar con el servidor backend');
+    }
+  }
+};
 
   return (
     <div style={{ minHeight: '100vh', display: 'flex', flexDirection: 'column' }}>

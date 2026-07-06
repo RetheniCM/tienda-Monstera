@@ -6,8 +6,17 @@ const bcrypt = require('bcrypt');
 // POST /api/auth/registrar
 router.post('/registrar', async (req, res) => {
   const { nombre, correo, contrasena } = req.body;
+
   if (!nombre || !correo || !contrasena) {
     return res.status(400).json({ error: "Faltan campos obligatorios" });
+  }
+
+  // CORRECCIÓN AQUÍ: Limpiamos espacios y pasamos todo a minúsculas
+  const correoLimpio = correo.trim().toLowerCase();
+
+  let rol = 'cliente';
+  if (correoLimpio.endsWith('@monstera.com')) {
+    rol = 'admin';
   }
 
   try {
@@ -15,9 +24,10 @@ router.post('/registrar', async (req, res) => {
     const hashedPass = await bcrypt.hash(contrasena, saltRounds);
     const fechaReg = new Date().toISOString().split('T')[0]; // YYYY-MM-DD
 
+    // Usamos el 'correoLimpio' también en el INSERT para evitar problemas en el login
     await db.query(
-      'INSERT INTO usuarios (nombre, correo, contrasena, rol, fecha_reg) VALUES (?, ?, ?, "cliente", ?)',
-      [nombre, correo, hashedPass, fechaReg]
+      'INSERT INTO usuarios (nombre, correo, contrasena, rol, fecha_reg) VALUES (?, ?, ?, ?, ?)',
+      [nombre, correoLimpio, hashedPass, rol, fechaReg]
     );
 
     res.status(201).json({ message: "Registro exitoso." });
