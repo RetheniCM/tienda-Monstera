@@ -27,8 +27,8 @@ function Dashboard() {
     precio: 0,
     stock: 0,
     imagen: '',
-    nivel_riego: 'No aplica',
-    nivel_luz: 'No aplica'
+    nivel_riego: 'Moderado', 
+    nivel_luz: 'Media'
   });
 
   // 2. CARGA DE DATOS DE LA BD
@@ -124,8 +124,8 @@ function Dashboard() {
       precio: 0,
       stock: 0,
       imagen: '',
-      nivel_riego: 'No aplica',
-      nivel_luz: 'No aplica'
+      nivel_riego: 'Moderado', 
+      nivel_luz: 'Media'
     });
     setModalAgregarOpen(true);
   };
@@ -229,8 +229,7 @@ function Dashboard() {
                 </div>
             )}
             </div>
-          <button style={{ padding: '10px 15px', borderRadius: '8px', backgroundColor: '#132c15', color: 'white', border: 'none', cursor: 'pointer' }}>Tabla</button>
-          <button style={{ padding: '10px 15px', borderRadius: '8px', border: '1px solid #eae6df', background: 'white', cursor: 'pointer' }}>Tarjetas</button>
+
           <button onClick={abrirModalAgregar} style={{ padding: '10px 20px', borderRadius: '8px', backgroundColor: '#1e4620', color: 'white', border: 'none', cursor: 'pointer', fontWeight: '600' }}>
             + Agregar Producto
           </button>
@@ -282,8 +281,8 @@ function Dashboard() {
                     {producto.stock} uds. {producto.stock <= 7 && '(Crítico)'}
                   </td>
                   <td style={{ padding: '15px' }}>
-                    <button onClick={() => abrirModalEditar(producto)} style={{ background: 'none', border: 'none', cursor: 'pointer', marginRight: '12px' }}>✏️</button>
-                    <button onClick={() => manejarEliminar(producto.id_producto)} style={{ background: 'none', border: 'none', cursor: 'pointer' }}>🗑️</button>
+                    <button onClick={() => abrirModalEditar(producto)} style={{ background: 'none', border: 'none', cursor: 'pointer', marginRight: '12px' }}>Editar✏️</button>
+                    <button onClick={() => manejarEliminar(producto.id_producto)} style={{ background: 'none', border: 'none', cursor: 'pointer' }}>Eliminar🗑️</button>
                   </td>
                 </tr>
               ))}
@@ -345,7 +344,6 @@ function Dashboard() {
                     <option value="Exterior">Exterior</option>
                     <option value="Herramientas">Herramientas</option>
                     <option value="Tierra/Abonos">Abono</option>
-                    <option value="Macetas">Macetas</option>
                   </select>
                 </div>
                 <div style={{ flex: 1 }}>
@@ -382,7 +380,44 @@ function Dashboard() {
                   />
                 </div>
               </div>
+              
+              <div style={{ display: 'flex', gap: '20px', marginBottom: '15px' }}>
+                <div style={{ flex: 1 }}>
+                  <label style={{ display: 'block', fontSize: '14px', fontWeight: '500', color: '#132c15', marginBottom: '5px' }}>
+                    Nivel de riego
+                  </label>
+                  <select
+                    value={productoSeleccionado.nivel_riego || 'Moderado'}
+                    onChange={(e) => setProductoSeleccionado({
+                      ...productoSeleccionado,
+                      nivel_riego: e.target.value
+                    })}
+                    style={{ width: '100%', padding: '12px', borderRadius: '10px', border: 'none', backgroundColor: '#eae6df', color: '#132c15', fontSize: '14px', height: '45px' }}
+                  >
+                    <option value="Bajo">Bajo</option>
+                    <option value="Moderado">Moderado</option>
+                    <option value="Frecuente">Frecuente</option>
+                  </select>
+                </div>
 
+                <div style={{ flex: 1 }}>
+                  <label style={{ display: 'block', fontSize: '14px', fontWeight: '500', color: '#132c15', marginBottom: '5px' }}>
+                    Nivel de luz
+                  </label>
+                  <select
+                    value={productoSeleccionado.nivel_luz || 'Media'}
+                    onChange={(e) => setProductoSeleccionado({
+                      ...productoSeleccionado,
+                      nivel_luz: e.target.value
+                    })}
+                    style={{ width: '100%', padding: '12px', borderRadius: '10px', border: 'none', backgroundColor: '#eae6df', color: '#132c15', fontSize: '14px', height: '45px' }}
+                  >
+                    <option value="Sombra">Sombra</option>
+                    <option value="Luz Indirecta">Luz Indirecta</option>
+                    <option value="Sol Directo">Sol Directo</option>
+                  </select>
+                </div>
+              </div>
               <div style={{ display: 'flex', justifyContent: 'space-between', gap: '15px' }}>
                 <button 
                   type="button"
