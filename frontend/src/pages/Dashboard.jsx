@@ -1,8 +1,12 @@
 import React, { useState, useEffect } from 'react';
 import { useTranslation } from 'react-i18next';
 import logoMonstera from '../assets/log_monstera.png';
+import { useNavigate } from 'react-router-dom';
 
 function Dashboard() {
+
+  const navigate = useNavigate();
+
   // 1. ESTADOS PRINCIPALES
   const [productos, setProductos] = useState([]);
   const [busqueda, setBusqueda] = useState('');
@@ -115,6 +119,15 @@ function Dashboard() {
     return coincideBusqueda && coincideCategoria;
     });
 
+  const manejarCierreSesion = () => {
+    // 1. Borramos el rol y cualquier otra variable de sesión que guardes
+    localStorage.removeItem('rol'); 
+    // localStorage.clear(); // O usa esto si quieres limpiar TODO lo acumulado
+      
+    // 2. Redirigimos al formulario de inicio de sesión
+    navigate('/'); // Ajusta esta ruta según donde tengas tu pantalla de Login
+  };
+
   // Funciones auxiliares para abrir modales limpian o cargan el estado
   const abrirModalAgregar = () => {
     setProductoSeleccionado({
@@ -144,8 +157,8 @@ function Dashboard() {
           <img src={logoMonstera} alt="Monstera - Logotipo de la tienda de plantas" style={{ height: '35px', width: 'auto' }} />
           <span style={{ fontSize: '24px', fontWeight: 'bold', color: '#1d3b24' }} aria-hidden="true">Monstera</span>
         </div>
-        <button style={{ background: 'none', border: 'none', color: 'black', display: 'flex', alignItems: 'center', gap: '6px', cursor: 'pointer', fontSize: '14px' }}>
-          <span></span> Salir
+        <button style={{ background: 'none', border: 'none', color: 'black', display: 'flex', alignItems: 'center', gap: '6px', cursor: 'pointer', fontSize: '14px' }} onClick={manejarCierreSesion}>
+          Salir
         </button>
       </header>
 

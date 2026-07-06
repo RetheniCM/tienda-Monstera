@@ -2,11 +2,24 @@ import React, { useState, useEffect } from 'react';
 import axios from 'axios';
 import logoMonstera from '../assets/log_monstera.png';
 import { useTranslation } from 'react-i18next';
+import { useNavigate } from 'react-router-dom';
 
 function Catalogo() {
+
+  const navigate = useNavigate();
+
   const { t, i18n } = useTranslation();
   const cambiarIdioma = (idioma) => {
     i18n.changeLanguage(idioma);
+  };
+
+  const manejarCierreSesion = () => {
+    // 1. Borramos el rol y cualquier otra variable de sesión que guardes
+    localStorage.removeItem('rol'); 
+    // localStorage.clear(); // O usa esto si quieres limpiar TODO lo acumulado
+      
+    // 2. Redirigimos al formulario de inicio de sesión
+    navigate('/'); // Ajusta esta ruta según donde tengas tu pantalla de Login
   };
 
   // 1. ESTADOS PRINCIPALES
@@ -148,6 +161,10 @@ const coincideBusqueda =
           style={{ display: 'flex', alignItems: 'center', gap: '8px', backgroundColor: '#19381f', color: '#ffffff', border: 'none', padding: '10px 20px', borderRadius: '8px', fontWeight: '600', cursor: 'pointer', fontSize: '14px' }}
         >
           <span aria-hidden="true"></span> <span>{t('carrito')} ({carritoCount})</span>
+        </button>
+
+        <button style={{ background: 'none', border: 'none', color: 'black', display: 'flex', alignItems: 'center', gap: '6px', cursor: 'pointer', fontSize: '14px' }} onClick={manejarCierreSesion}>
+          Salir
         </button>
       </header>
 
