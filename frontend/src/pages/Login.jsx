@@ -1,120 +1,169 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import axios from 'axios';
 import { Link, useNavigate } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
 import logoMonstera from '../assets/log_monstera.png';
+import iconoSol from '../assets/icono_sol.png';
+import iconoLuna from '../assets/icono_luna.png'; // Corregido el typo de iconcLuna
 
 function Login() {
   
-  const { t, i18n} = useTranslation();
-
+  const { t, i18n } = useTranslation();
   const navigate = useNavigate();
+  
   const [correo, setCorreo] = useState('');
   const [contrasena, setContrasena] = useState('');
   const [mensaje, setMensaje] = useState('');
-  // Bandera para saber si hay un error y ajustar la UX
   const [errorStatus, setErrorStatus] = useState(false);
 
-const manejarLogin = async (e) => {
-  e.preventDefault();
-  setErrorStatus(false); 
-  try {
-    const respuesta = await axios.post('http://localhost:5000/api/auth/login', {
-      correo,
-      contrasena
-    });
+  // ==========================================
+  // ESTADO Y LÓGICA DE MODO OSCURO (Sincronizado)
+  // ==========================================
+  const [modoOscuro, setModoOscuro] = useState(() => {
+    return localStorage.getItem('tema') === 'oscuro';
+  });
 
-    setMensaje(`¡Bienvenido! Acceso correcto.`);
-    console.log('Datos que llegan del backend:', respuesta.data);
+  useEffect(() => {
+    localStorage.setItem('tema', modoOscuro ? 'oscuro' : 'claro');
+  }, [modoOscuro]);
 
-    // CORRECCIÓN AQUÍ: Tu backend manda 'rol' directo en la raíz de respuesta.data
-    const rolUsuario = respuesta.data.rol; 
-    
-    if (rolUsuario) {
-      localStorage.setItem('rol', rolUsuario);
-    }
+  // Paleta de colores dinámica para el Login
+  const tema = {
+    bgPrincipal: modoOscuro ? '#121212' : '#fbfaf7',
+    bgTarjeta: modoOscuro ? '#1e1e1e' : '#ffffff',
+    bgInput: modoOscuro ? '#2d2d2d' : '#eae7e1',
+    textoPrincipal: modoOscuro ? '#e0e0e0' : '#19381f',
+    textoLabel: modoOscuro ? '#aedcae' : '#2d4a30',
+    textoSecundario: modoOscuro ? '#b0b0b0' : '#555555',
+    textoDestacado: modoOscuro ? '#e5a47e' : '#8b5a42', // Saludo / Mensajes
+    bordeTarjeta: modoOscuro ? 'rgba(255, 255, 255, 0.1)' : 'rgba(230, 227, 221, 0.6)',
+    bordeDivisor: modoOscuro ? '#333333' : '#e0dbd3',
+    bgBotónTema: modoOscuro ? '#2d2d2d' : '#eae5dd'
+  };
 
-    // REDIRECCIÓN: Esperamos 1 segundo y evaluamos el string exacto
-    setTimeout(() => {
-      if (rolUsuario === 'admin') {
-        navigate('/admin/dashboard');
-      } else {
-        navigate('/catalogo');
+  const manejarLogin = async (e) => {
+    e.preventDefault();
+    setErrorStatus(false); 
+    try {
+      const respuesta = await axios.post('http://localhost:5000/api/auth/login', {
+        correo,
+        contrasena
+      });
+
+      setMensaje(`¡Bienvenido! Acceso correcto.`);
+      console.log('Datos que llegan del backend:', respuesta.data);
+
+      const rolUsuario = respuesta.data.rol; 
+      
+      if (rolUsuario) {
+        localStorage.setItem('rol', rolUsuario);
       }
-    }, 1000);
 
-  } catch (error) {
-    setErrorStatus(true);
-    if (error.response && error.response.data) {
-      setMensaje(error.response.data.error || 'Error al iniciar sesión');
-    } else {
-      setMensaje('No se pudo conectar con el servidor backend');
+      setTimeout(() => {
+        if (rolUsuario === 'admin') {
+          navigate('/admin/dashboard');
+        } else {
+          navigate('/catalogo');
+        }
+      }, 1000);
+
+    } catch (error) {
+      setErrorStatus(true);
+      if (error.response && error.response.data) {
+        setMensaje(error.response.data.error || 'Error al iniciar sesión');
+      } else {
+        setMensaje('No se pudo conectar con el servidor backend');
+      }
     }
-  }
-};
+  };
 
   return (
-    <div style={{ minHeight: '100vh', display: 'flex', flexDirection: 'column' }}>
+    <div style={{ minHeight: '100vh', display: 'flex', flexDirection: 'column', backgroundColor: tema.bgPrincipal, color: tema.textoPrincipal, transition: 'background-color 0.3s ease, color 0.3s ease' }}>
       
       {/* BARRA DE NAVEGACIÓN */}
       <header role="banner" style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', padding: '20px 60px', background: 'transparent' }}>
         <div style={{ display: 'flex', alignItems: 'center', gap: '15px' }}>
-          {/* EL LOGO SEMÁNTICO */}
           <img 
             src={logoMonstera} 
-            alt="Logo Monstera - Plants & Gardening" // Texto alternativo claro
+            alt="Logo Monstera - Plants & Gardening" 
             style={{ height: '40px', width: 'auto' }} 
           />
-          {/* Mantenemos el nombre de la marca en texto */}
-          <span className="serif-font" style={{ fontSize: '22px', fontWeight: 'bold', letterSpacing: '0.5px' }}>Monstera</span>
+          <span className="serif-font" style={{ fontSize: '22px', fontWeight: 'bold', letterSpacing: '0.5px', color: tema.textoPrincipal }}>Monstera</span>
         </div>
 
-    {/* SELECTOR DE IDIOMAS FLOTANTE EN LA ESQUINA */}
-    <div style={{ position: 'absolute', top: '20px', right: '40px', display: 'flex', gap: '12px', alignItems: 'center' }} role="navigation" aria-label="Selección de idioma">
-      <button 
-        onClick={() => i18n.changeLanguage('es')} 
-        style={{ fontWeight: i18n.language === 'es' ? '700' : '400', cursor: 'pointer', background: 'none', border: 'none', color: '#19381f', fontSize: '14px', padding: '5px' }}
-      >
-        🇲🇽 ES
-      </button>
-      <span style={{ color: '#ccc' }} aria-hidden="true">|</span>
-      <button 
-        onClick={() => i18n.changeLanguage('en')} 
-        style={{ fontWeight: i18n.language === 'en' ? '700' : '400', cursor: 'pointer', background: 'none', border: 'none', color: '#19381f', fontSize: '14px', padding: '5px' }}
-      >
-        🇺🇸 EN
-      </button>
-      <span style={{ color: '#ccc' }} aria-hidden="true">|</span>
-      <button 
-        onClick={() => i18n.changeLanguage('ja')} 
-        style={{ fontWeight: i18n.language === 'ja' ? '700' : '400', cursor: 'pointer', background: 'none', border: 'none', color: '#19381f', fontSize: '14px', padding: '5px' }}
-      >
-        🇯🇵 JA
-      </button>
-    </div>
+        {/* SELECTOR DE IDIOMAS Y BOTÓN MODO OSCURO */}
+        <div style={{ position: 'absolute', top: '20px', right: '40px', display: 'flex', gap: '12px', alignItems: 'center' }} role="navigation" aria-label="Configuración de interfaz">
+          <button 
+            onClick={() => i18n.changeLanguage('es')} 
+            style={{ fontWeight: i18n.language === 'es' ? '700' : '400', cursor: 'pointer', background: 'none', border: 'none', color: tema.textoPrincipal, fontSize: '14px', padding: '5px' }}
+          >
+            🇲🇽 ES
+          </button>
+          <span style={{ color: '#ccc' }} aria-hidden="true">|</span>
+          <button 
+            onClick={() => i18n.changeLanguage('en')} 
+            style={{ fontWeight: i18n.language === 'en' ? '700' : '400', cursor: 'pointer', background: 'none', border: 'none', color: tema.textoPrincipal, fontSize: '14px', padding: '5px' }}
+          >
+            🇺🇸 EN
+          </button>
+          <span style={{ color: '#ccc' }} aria-hidden="true">|</span>
+          <button 
+            onClick={() => i18n.changeLanguage('ja')} 
+            style={{ fontWeight: i18n.language === 'ja' ? '700' : '400', cursor: 'pointer', background: 'none', border: 'none', color: tema.textoPrincipal, fontSize: '14px', padding: '5px' }}
+          >
+            🇯🇵 JA
+          </button>
+
+          <span style={{ color: '#ccc' }} aria-hidden="true">|</span>
+
+          {/* BOTÓN INTERACTIVO MODO OSCURO CON IMAGEN */}
+          <button
+            onClick={() => setModoOscuro(!modoOscuro)}
+            aria-label={modoOscuro ? "Cambiar a modo claro" : "Cambiar a modo oscuro"}
+            style={{ 
+              background: tema.bgBotónTema, 
+              border: 'none', 
+              cursor: 'pointer', 
+              padding: '6px', 
+              borderRadius: '50%', 
+              display: 'inline-flex', 
+              alignItems: 'center',
+              justifyContent: 'center',
+              transition: 'background-color 0.3s ease',
+              width: '34px',       
+              height: '34px'       
+            }}
+          >
+            <img 
+              src={modoOscuro ? iconoSol : iconoLuna} 
+              alt={modoOscuro ? "Icono de Sol" : "Icono de Luna"} 
+              style={{ width: '18px', height: '18px', objectFit: 'contain' }} 
+            />
+          </button>
+        </div>
       </header>
 
       {/* CONTENIDO CENTRAL */}
       <main role="main" style={{ flex: 1, display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', paddingBottom: '60px' }}>
         
-        {/* Divisor decorativo */}
+        {/* Divisor decorativo adaptivo */}
         <div style={{ display: 'flex', alignItems: 'center', width: '200px', margin: '0 auto 20px auto' }} aria-hidden="true">
-          <div style={{ flex: 1, height: '1px', backgroundColor: '#e0dbd3' }}></div>
-          <span style={{ margin: '0 10px', color: '#12331b', fontSize: '14px' }}>💧</span>
-          <div style={{ flex: 1, height: '1px', backgroundColor: '#e0dbd3' }}></div>
+          <div style={{ flex: 1, height: '1px', backgroundColor: tema.bordeDivisor }}></div>
+          <span style={{ margin: '0 10px', color: modoOscuro ? '#aedcae' : '#12331b', fontSize: '14px' }}>💧</span>
+          <div style={{ flex: 1, height: '1px', backgroundColor: tema.bordeDivisor }}></div>
         </div>
 
         {/* TARJETA DE LOGIN */}
-        <section aria-labelledby="login-title" style={{ background: '#ffffff', width: '100%', maxWidth: '460px', padding: '40px 45px', borderRadius: '16px', boxShadow: '0 10px 30px rgba(0, 0, 0, 0.04)', border: '1px solid rgba(230, 227, 221, 0.6)' }}>
+        <section aria-labelledby="login-title" style={{ background: tema.bgTarjeta, width: '100%', maxWidth: '460px', padding: '40px 45px', borderRadius: '16px', boxShadow: modoOscuro ? '0 10px 30px rgba(0, 0, 0, 0.3)' : '0 10px 30px rgba(0, 0, 0, 0.04)', border: `1px solid ${tema.bordeTarjeta}`, transition: 'background-color 0.3s ease, border-color 0.3s ease' }}>
           
-          <h2 id="login-title" style={{ textAlign: 'center', fontSize: '32px', marginBottom: '6px', fontWeight: '700' }}>{t('iniciar_sesion')}</h2>
-          <p style={{ fontFamily: 'Georgia, serif', fontStyle: 'italic', color: '#8b5a42', textAlign: 'center', marginBottom: '30px', fontSize: '15px' }}>{t('saludo')}</p>
+          <h2 id="login-title" style={{ textAlign: 'center', fontSize: '32px', marginBottom: '6px', fontWeight: '700', color: tema.textoPrincipal }}>{t('iniciar_sesion')}</h2>
+          <p style={{ fontFamily: 'Georgia, serif', fontStyle: 'italic', color: tema.textoDestacado, textAlign: 'center', marginBottom: '30px', fontSize: '15px' }}>{t('saludo')}</p>
 
           <form onSubmit={manejarLogin}>
             
             {/* Campo Correo */}
             <div style={{ marginBottom: '24px' }}>
-              <label htmlFor="correo-input" style={{ display: 'block', marginBottom: '8px', fontSize: '14px', fontWeight: '600', color: '#2d4a30' }}>
+              <label htmlFor="correo-input" style={{ display: 'block', marginBottom: '8px', fontSize: '14px', fontWeight: '600', color: tema.textoLabel }}>
                 {t('correo')}
               </label>
               <input 
@@ -125,14 +174,14 @@ const manejarLogin = async (e) => {
                 onChange={(e) => setCorreo(e.target.value)} 
                 required 
                 autoComplete="email"
-                style={{ width: '100%', padding: '14px 16px', backgroundColor: '#eae7e1', border: 'none', borderRadius: '8px', fontSize: '15px', color: '#444' }}
+                style={{ width: '100%', padding: '14px 16px', backgroundColor: tema.bgInput, border: 'none', borderRadius: '8px', fontSize: '15px', color: tema.textoPrincipal, transition: 'background-color 0.3s ease' }}
               />
             </div>
 
             {/* Campo Contraseña */}
             <div style={{ marginBottom: '30px' }}>
               <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: '8px' }}>
-                <label htmlFor="contrasena-input" style={{ fontSize: '14px', fontWeight: '600', color: '#2d4a30' }}>{t('contrasena')}</label>
+                <label htmlFor="contrasena-input" style={{ fontSize: '14px', fontWeight: '600', color: tema.textoLabel }}>{t('contrasena')}</label>
               </div>
               <input 
                 id="contrasena-input"
@@ -142,7 +191,7 @@ const manejarLogin = async (e) => {
                 onChange={(e) => setContrasena(e.target.value)} 
                 required 
                 autoComplete="current-password"
-                style={{ width: '100%', padding: '14px 16px', backgroundColor: '#eae7e1', border: 'none', borderRadius: '8px', fontSize: '15px' }}
+                style={{ width: '100%', padding: '14px 16px', backgroundColor: tema.bgInput, border: 'none', borderRadius: '8px', fontSize: '15px', color: tema.textoPrincipal, transition: 'background-color 0.3s ease' }}
               />
             </div>
 
@@ -154,11 +203,11 @@ const manejarLogin = async (e) => {
           {/* CONTENEDOR DE MENSAJE ACCESIBLE */}
           <div 
             id="login-status" 
-            role={errorStatus ? "alert" : "status"} // Rol dinámico según el estado
+            role={errorStatus ? "alert" : "status"} 
             aria-live="polite" 
             style={{ 
               marginTop: '20px', 
-              color: errorStatus ? '#b71c1c' : '#8b5a42', // Rojo para error, marrón para info
+              color: errorStatus ? '#ff6b6b' : tema.textoDestacado, // Rojo más brillante para modo oscuro
               fontWeight: 'bold', 
               textAlign: 'center', 
               fontSize: '14px' 
@@ -169,12 +218,15 @@ const manejarLogin = async (e) => {
 
           <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', marginTop: '30px' }}>
             <div style={{ display: 'flex', alignItems: 'center', width: '120px', marginBottom: '20px' }} aria-hidden="true">
-              <div style={{ flex: 1, height: '1px', backgroundColor: '#eae7e1' }}></div>
+              <div style={{ flex: 1, height: '1px', backgroundColor: tema.bgInput }}></div>
               <span style={{ margin: '0 8px', color: '#ccc', fontSize: '10px' }}>✦</span>
-              <div style={{ flex: 1, height: '1px', backgroundColor: '#eae7e1' }}></div>
+              <div style={{ flex: 1, height: '1px', backgroundColor: tema.bgInput }}></div>
             </div>
-            <p style={{ fontSize: '14px', color: '#555' }}>
-               {t('pregunta_registro')}<Link to="/registro" style={{ color: '#19381f', fontWeight: '700', textDecoration: 'underline' }}>{t('registro')}</Link>
+            <p style={{ fontSize: '14px', color: tema.textoSecundario }}>
+               {t('pregunta_registro')}
+               <Link to="/registro" style={{ color: modoOscuro ? '#aedcae' : '#19381f', fontWeight: '700', textDecoration: 'underline', marginLeft: '5px' }}>
+                 {t('registro')}
+               </Link>
             </p>
           </div>
 
