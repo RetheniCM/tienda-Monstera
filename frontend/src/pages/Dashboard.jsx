@@ -300,7 +300,7 @@ function Dashboard() {
                       {t('todas')}
                   </button>
 
-                  {/* AQUÍ SE DESPLIEGAN LAS CATEGORÍAS FIJAS TRADUCIDAS (INCLUYE EXTERIOR) */}
+                  
                   {listaCategoriasSoportadas.map((cat) => (
                       <button
                         key={cat}

@@ -1,8 +1,3 @@
--- =========================================================
--- 1. SCRIPTS DDL (DATA DEFINITION LANGUAGE)
--- Creación de la estructura de la base de datos
--- =========================================================
-
 -- Crear la base de datos si no existe
 CREATE DATABASE IF NOT EXISTS monstera_db;
 USE monstera_db;
@@ -23,6 +18,7 @@ CREATE TABLE IF NOT EXISTS productos (
     nombre_comun VARCHAR(100) NOT NULL,
     nombre_cienti VARCHAR(150),
     categoria VARCHAR(50) NOT NULL DEFAULT 'Interior',
+    descripcion VARCHAR(100),
     nivel_riego VARCHAR(30) NOT NULL DEFAULT 'Moderado',
     nivel_luz VARCHAR(30) NOT NULL DEFAULT 'Media',
     precio DECIMAL(10, 2) NOT NULL DEFAULT 0.00,

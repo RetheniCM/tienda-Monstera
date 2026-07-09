@@ -10,5 +10,5 @@ const pool = mysql.createPool({
   connectionLimit: 10
 });
 
-// Exportamos en modo promesa
+
 module.exports = pool.promise();
