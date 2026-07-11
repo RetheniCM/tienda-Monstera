@@ -112,6 +112,12 @@ const resources = {
       "critico": "Crítico",
       "editar": "Editar",
       "eliminar": "Eliminar",
+      "lbl_descripcion": "Descripción",
+      "ph_descripcion": "Añade detalles sobre los cuidados o características...",
+      "ModoOscuro" : "Modo Oscuro",
+      "ModoClaro": "Modo Claro",
+      "idioma" : "Idioma",
+      "color" : "Color de Enfoque",
 
       //VENTANA DASHBOARD
       "cat_interior": "Interior",
@@ -247,6 +253,12 @@ const resources = {
       "critico": "Critical",
       "editar": "Edit",
       "eliminar": "Delete",
+      "lbl_descripcion": "Description",
+      "ph_descripcion": "Add details about care or characteristics...",
+      "ModoOscuro" : "Dark Mode",
+      "ModoClaro": "light Mode",
+      "idioma" : "Language",
+      "color" : "Focus Color",
 
       //VENTANA DASHBOARD
       "cat_interior": "Indoor",
@@ -381,6 +393,12 @@ const resources = {
       "critico": "危険水準",
       "editar": "編集",
       "eliminar": "削除",
+      "lbl_descripcion": "説明",
+      "ph_descripcion": "お手入れ方法や特徴などの詳細を追加してください...",
+      "ModoOscuro" : "ダークモード",
+      "ModoClaro": "ライトモードへ",
+      "idioma" : "言語",
+      "color" : "フォーカスカラー",
 
       //VENTANA DASHBOARD
       "cat_interior": "室内用",

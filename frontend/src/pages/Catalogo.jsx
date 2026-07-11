@@ -7,7 +7,7 @@ import { useTranslation } from 'react-i18next';
 import { useNavigate } from 'react-router-dom';
 
 function Catalogo() {
-
+  
   const navigate = useNavigate();
   const { t, i18n } = useTranslation();
 
@@ -53,6 +53,46 @@ function Catalogo() {
   const [plantas, setPlantas] = useState([]);
   const [cargando, setCargando] = useState(true);
 
+  // ESTADO DEL MENÚ HAMBURGUESA (navegación / filtros en pantallas pequeñas)
+  const [menuMovilAbierto, setMenuMovilAbierto] = useState(false);
+
+  // ESTADO DEL HEADER "INTELIGENTE": se oculta al bajar, reaparece al subir
+  const [headerVisible, setHeaderVisible] = useState(true);
+
+  useEffect(() => {
+    let ultimoScrollY = window.scrollY;
+
+    const manejarScroll = () => {
+      const scrollActual = window.scrollY;
+      const bajando = scrollActual > ultimoScrollY;
+      const diferencia = Math.abs(scrollActual - ultimoScrollY);
+
+      // Si el menú hamburguesa está abierto, mantenemos el header visible
+      if (menuMovilAbierto) {
+        setHeaderVisible(true);
+      } else if (scrollActual <= 0) {
+        // Siempre visible hasta arriba del todo
+        setHeaderVisible(true);
+      } else if (diferencia > 5) {
+        setHeaderVisible(!bajando);
+      }
+
+      ultimoScrollY = scrollActual;
+    };
+
+    window.addEventListener('scroll', manejarScroll, { passive: true });
+    return () => window.removeEventListener('scroll', manejarScroll);
+  }, [menuMovilAbierto]);
+
+  // ESTADO DEL COLOR DE CONTORNO PERSONALIZABLE (hover en tarjetas)
+  const [colorContorno, setColorContorno] = useState(() => {
+    return localStorage.getItem('colorContorno') || '#e5a47e';
+  });
+
+  useEffect(() => {
+    localStorage.setItem('colorContorno', colorContorno);
+  }, [colorContorno]);
+
   // 2. ESTADOS DE FILTROS
   const [filtrosCategoria, setFiltrosCategoria] = useState({ Interior: false, Exterior: false, Herramientas: false, Abono: false });
   const [filtrosRiego, setFiltrosRiego] = useState({ Bajo: false, Moderado: false, Frecuente: false });
@@ -79,7 +119,8 @@ function Catalogo() {
               luz: prod.nivel_luz || 'Luz Indirecta',
               precio: parseFloat(prod.precio) || 0,
               stock: prod.stock || 0,
-              imagen: rutaImagen
+              imagen: rutaImagen,
+              descripcion: prod.descripcion || ''
             };
           });
           setPlantas(productosMapeados);
@@ -127,68 +168,92 @@ function Catalogo() {
 
   return (
     <div style={{ minHeight: '100vh', backgroundColor: tema.bgPrincipal, color: tema.textoPrincipal, fontFamily: 'system-ui, sans-serif', transition: 'background-color 0.3s ease, color 0.3s ease' }}>
-      
+
+      {/* ESTILOS GLOBALES: hover de tarjetas, menú hamburguesa y responsive */}
+      <style>{`
+        .tarjeta-planta {
+          transition: transform 0.25s ease, box-shadow 0.25s ease, border-color 0.25s ease;
+          border: 2px solid transparent;
+        }
+        .tarjeta-planta:hover,
+        .tarjeta-planta:focus-within {
+          transform: scale(1.04);
+          border-color: var(--color-contorno);
+          box-shadow: 0 10px 25px rgba(0,0,0,0.15);
+          z-index: 2;
+        }
+
+        .btn-hamburguesa {
+          display: inline-flex;
+          flex-direction: column;
+          justify-content: center;
+          gap: 5px;
+          background: none;
+          border: none;
+          cursor: pointer;
+          padding: 8px;
+          position: relative;
+        }
+        .btn-hamburguesa .linea-hamburguesa {
+          display: block;
+          width: 24px;
+          height: 2px;
+          background-color: ${tema.textoPrincipal};
+          border-radius: 2px;
+          transition: transform 0.25s ease, opacity 0.25s ease;
+        }
+
+        .menu-overlay {
+          position: fixed;
+          inset: 0;
+          z-index: 15;
+        }
+
+        .menu-desplegable {
+          position: absolute;
+          top: calc(100% + 10px);
+          right: 0;
+          background: ${tema.bgHeader};
+          border: 1px solid ${tema.bordeHeader};
+          border-radius: 10px;
+          box-shadow: 0 12px 30px rgba(0,0,0,0.18);
+          padding: 18px;
+          display: flex;
+          flex-direction: column;
+          gap: 16px;
+          min-width: 220px;
+          transform: translateY(${menuMovilAbierto ? '0' : '-8px'});
+          opacity: ${menuMovilAbierto ? 1 : 0};
+          visibility: ${menuMovilAbierto ? 'visible' : 'hidden'};
+          transition: transform 0.2s ease, opacity 0.2s ease, visibility 0.2s ease;
+          z-index: 20;
+        }
+
+        @media (max-width: 900px) {
+          .contenedor-principal {
+            flex-direction: column;
+          }
+          .aside-filtros {
+            width: 100% !important;
+            position: static !important;
+            max-height: none !important;
+          }
+          .buscador-central {
+            flex: 1 1 auto !important;
+            margin: 0 12px !important;
+          }
+        }
+      `}</style>
+
       {/* HEADER ACCESIBLE */}
-      <header role="banner" style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', padding: '15px 60px', background: tema.bgHeader, borderBottom: `1px solid ${tema.bordeHeader}`, transition: 'background-color 0.3s ease' }}>
-        <div style={{ display: 'flex', alignItems: 'center', gap: '12px' }}>
+      <header role="banner" style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', padding: '15px 30px', background: tema.bgHeader, borderBottom: `1px solid ${tema.bordeHeader}`, position: 'fixed', top: 0, left: 0, right: 0, gap: '20px', zIndex: 30, transform: headerVisible ? 'translateY(0)' : 'translateY(-100%)', transition: 'transform 0.3s ease, background-color 0.3s ease' }}>
+        <div style={{ display: 'flex', alignItems: 'center', gap: '12px', flexShrink: 0 }}>
           <img src={logoMonstera} alt="Monstera - Logotipo de la tienda de plantas" style={{ height: '35px', width: 'auto' }} />
           <span style={{ fontSize: '24px', fontWeight: 'bold', color: tema.textoHeaderLogo }} aria-hidden="true">Monstera</span>
         </div>
-        
-        {/* SELECTOR DE IDIOMAS Y MODO OSCURO */}
-        <div style={{ display: 'flex', gap: '12px', alignItems: 'center' }} role="navigation" aria-label="Configuración de interfaz">
-          <button 
-            onClick={() => cambiarIdioma('es')} 
-            style={{ fontWeight: i18n.language === 'es' ? '700' : '400', cursor: 'pointer', background: 'none', border: 'none', color: tema.textoPrincipal, fontSize: '14px' }}
-          >
-            🇲🇽 ES
-          </button>
-          <span style={{ color: '#ccc' }} aria-hidden="true">|</span>
-          <button 
-            onClick={() => cambiarIdioma('en')} 
-            style={{ fontWeight: i18n.language === 'en' ? '700' : '400', cursor: 'pointer', background: 'none', border: 'none', color: tema.textoPrincipal, fontSize: '14px' }}
-          >
-            🇺🇸 EN
-          </button>
-          <span style={{ color: '#ccc' }} aria-hidden="true">|</span>
-          <button 
-            onClick={() => cambiarIdioma('ja')} 
-            aria-label="日本語に言語を変更"
-            style={{ fontWeight: i18n.language === 'ja' ? '700' : '400', cursor: 'pointer', background: 'none', border: 'none', color: tema.textoPrincipal, fontSize: '14px' }}
-          >
-            🇯🇵 JA
-          </button>
 
-          <span style={{ color: '#ccc' }} aria-hidden="true">|</span>
-
-          
-        <button
-          onClick={() => setModoOscuro(!modoOscuro)}
-          aria-label={modoOscuro ? "Cambiar a modo claro" : "Cambiar a modo oscuro"}
-          style={{ 
-            background: modoOscuro ? '#2d2d2d' : '#eae5dd', 
-            border: 'none', 
-            cursor: 'pointer', 
-            padding: '8px', 
-            borderRadius: '50%', 
-            display: 'inline-flex', 
-            alignItems: 'center',
-            justifyContent: 'center',
-            transition: 'background-color 0.3s ease',
-            width: '36px',
-            height: '36px'
-          }}
-        >
-          <img 
-            src={modoOscuro ? iconoSol : iconoLuna} 
-            alt={modoOscuro ? "Icono de Sol" : "Icono de Luna"} 
-            style={{ width: '20px', height: '20px', objectFit: 'contain' }} 
-          />
-        </button>
-        </div>
-        
-        {/* Input de búsqueda traducido */}
-        <div style={{ flex: '0 1 400px', position: 'relative' }}>
+        {/* Input de búsqueda centrado */}
+        <div className="buscador-central" style={{ flex: '0 1 420px', position: 'relative' }}>
           <label htmlFor="buscador-plantas" style={{ position: 'absolute', width: '1px', height: '1px', padding: 0, margin: '-1px', overflow: 'hidden', clip: 'rect(0, 0, 0, 0)', border: 0 }}>
             {t('buscar')}
           </label>
@@ -202,25 +267,195 @@ function Catalogo() {
           />
         </div>
 
-        {/* Botón de carrito */}
-        <button 
-          aria-label={`${t('carrito')}, contiene ${carritoCount} artículos`}
-          style={{ display: 'flex', alignItems: 'center', gap: '8px', backgroundColor: '#19381f', color: '#ffffff', border: 'none', padding: '10px 20px', borderRadius: '8px', fontWeight: '600', cursor: 'pointer', fontSize: '14px' }}
-        >
-          <span>{t('carro')} ({carritoCount})</span>
-        </button>
+        <div style={{ display: 'flex', alignItems: 'center', gap: '16px', flexShrink: 0 }}>
+          {/* Botón de carrito */}
+          <button 
+            aria-label={`${t('carrito')}, contiene ${carritoCount} artículos`}
+            style={{ display: 'flex', alignItems: 'center', gap: '8px', backgroundColor: '#19381f', color: '#ffffff', border: 'none', padding: '10px 20px', borderRadius: '8px', fontWeight: '600', cursor: 'pointer', fontSize: '14px' }}
+          >
+            <span>{t('carro')} ({carritoCount})</span>
+          </button>
 
-        {/* Botón de Salir con color reactivo */}
-        <button style={{ background: 'none', border: 'none', color: tema.textoPrincipal, display: 'flex', alignItems: 'center', gap: '6px', cursor: 'pointer', fontSize: '14px' }} onClick={manejarCierreSesion}>
-          {t('Salir')}
-        </button>
+          {/* BOTÓN HAMBURGUESA: agrupa color de enfoque, idioma, modo y salir */}
+          <div style={{ position: 'relative' }}>
+            <button
+              className="btn-hamburguesa"
+              onClick={() => setMenuMovilAbierto(!menuMovilAbierto)}
+              aria-label={menuMovilAbierto ? 'Cerrar menú' : 'Abrir menú de opciones'}
+              aria-expanded={menuMovilAbierto}
+              aria-haspopup="true"
+              style={{
+                border: menuMovilAbierto ? `2px solid ${colorContorno}` : '2px solid transparent',
+                borderRadius: '10px'
+              }}
+            >
+              {menuMovilAbierto ? (
+                <span style={{ fontSize: '18px', lineHeight: 1, color: tema.textoPrincipal, background: 'none', width: 'auto', height: 'auto' }} aria-hidden="true">✕</span>
+              ) : (
+                <>
+                  <span className="linea-hamburguesa" />
+                  <span className="linea-hamburguesa" />
+                  <span className="linea-hamburguesa" />
+                </>
+              )}
+            </button>
+
+            {menuMovilAbierto && (
+              <div className="menu-overlay" onClick={() => setMenuMovilAbierto(false)} aria-hidden="true" />
+            )}
+
+            <div className="menu-desplegable" role="menu" aria-label="Opciones de interfaz">
+
+              {/* COLOR DE ENFOQUE */}
+              <div>
+                <span style={{ display: 'block', fontSize: '11px', fontWeight: '700', letterSpacing: '1px', textTransform: 'uppercase', color: tema.textoSecundario, marginBottom: '12px' }}>
+                  {t('color') || 'Color de enfoque'}
+                </span>
+                <label
+                  htmlFor="color-contorno"
+                  style={{ display: 'flex', alignItems: 'center', gap: '12px', cursor: 'pointer' }}
+                  title="Elige el color de contorno al pasar el cursor sobre una tarjeta"
+                >
+                  <span style={{ position: 'relative', width: '32px', height: '32px', flexShrink: 0 }}>
+                    <input
+                      id="color-contorno"
+                      type="color"
+                      value={colorContorno}
+                      onChange={(e) => setColorContorno(e.target.value)}
+                      style={{ width: '32px', height: '32px', padding: 0, border: 'none', borderRadius: '8px', cursor: 'pointer', background: 'none' }}
+                      aria-label="Seleccionar color de contorno de las tarjetas"
+                    />
+                  </span>
+                  <span style={{ fontSize: '14px', fontWeight: '600', color: tema.textoPrincipal, textTransform: 'uppercase' }}>
+                    {colorContorno}
+                  </span>
+                </label>
+              </div>
+
+              <hr style={{ border: 'none', height: '1px', backgroundColor: tema.bordeSeparador, margin: 0 }} aria-hidden="true" />
+
+              {/* IDIOMA */}
+              <div>
+                <span style={{ display: 'block', fontSize: '11px', fontWeight: '700', letterSpacing: '1px', textTransform: 'uppercase', color: tema.textoSecundario, marginBottom: '12px' }}>
+                  {t('idioma') || 'Idioma'}
+                </span>
+                <div
+                  role="navigation"
+                  aria-label="Selección de idioma"
+                  style={{ display: 'inline-flex', backgroundColor: tema.bgBuscador, borderRadius: '8px', padding: '4px', gap: '4px' }}
+                >
+                  <button
+                    onClick={() => cambiarIdioma('es')}
+                    style={{
+                      display: 'flex', alignItems: 'center', gap: '4px', cursor: 'pointer',
+                      background: i18n.language === 'es' ? tema.bgTarjeta : 'none',
+                      border: 'none', borderRadius: '6px', padding: '6px 10px',
+                      color: tema.textoPrincipal, fontSize: '13px', fontWeight: i18n.language === 'es' ? '700' : '400'
+                    }}
+                  >
+                    <span style={{ fontSize: '10px', opacity: 0.6 }}>MX</span> ES
+                  </button>
+                  <button
+                    onClick={() => cambiarIdioma('en')}
+                    style={{
+                      display: 'flex', alignItems: 'center', gap: '4px', cursor: 'pointer',
+                      background: i18n.language === 'en' ? tema.bgTarjeta : 'none',
+                      border: 'none', borderRadius: '6px', padding: '6px 10px',
+                      color: tema.textoPrincipal, fontSize: '13px', fontWeight: i18n.language === 'en' ? '700' : '400'
+                    }}
+                  >
+                    <span style={{ fontSize: '10px', opacity: 0.6 }}>US</span> EN
+                  </button>
+                  <button
+                    onClick={() => cambiarIdioma('ja')}
+                    aria-label="日本語に言語を変更"
+                    style={{
+                      display: 'flex', alignItems: 'center', gap: '4px', cursor: 'pointer',
+                      background: i18n.language === 'ja' ? tema.bgTarjeta : 'none',
+                      border: 'none', borderRadius: '6px', padding: '6px 10px',
+                      color: tema.textoPrincipal, fontSize: '13px', fontWeight: i18n.language === 'ja' ? '700' : '400'
+                    }}
+                  >
+                    <span style={{ fontSize: '10px', opacity: 0.6 }}>JP</span> JA
+                  </button>
+                </div>
+              </div>
+
+              <hr style={{ border: 'none', height: '1px', backgroundColor: tema.bordeSeparador, margin: 0 }} aria-hidden="true" />
+
+              {/* MODO OSCURO / CLARO */}
+              <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
+                <span style={{ fontSize: '14px', fontWeight: '700', color: tema.textoPrincipal }}>
+                  {modoOscuro ? (t('ModoClaro') || 'Modo Claro') : (t('ModoOscuro') || 'Modo Oscuro')}
+                </span>
+                <button
+                  onClick={() => setModoOscuro(!modoOscuro)}
+                  aria-label={modoOscuro ? "Cambiar a modo claro" : "Cambiar a modo oscuro"}
+                  style={{
+                    background: tema.bgBuscador,
+                    border: 'none',
+                    cursor: 'pointer',
+                    padding: '8px',
+                    borderRadius: '50%',
+                    display: 'inline-flex',
+                    alignItems: 'center',
+                    justifyContent: 'center',
+                    width: '36px',
+                    height: '36px',
+                    flexShrink: 0
+                  }}
+                >
+                  <img
+                    src={modoOscuro ? iconoSol : iconoLuna}
+                    alt=""
+                    style={{ width: '18px', height: '18px', objectFit: 'contain' }}
+                  />
+                </button>
+              </div>
+
+              <hr style={{ border: 'none', height: '1px', backgroundColor: tema.bordeSeparador, margin: 0 }} aria-hidden="true" />
+
+              {/* SALIR */}
+              <button
+                onClick={manejarCierreSesion}
+                style={{
+                  background: 'rgba(239, 68, 68, 0.12)',
+                  border: 'none',
+                  borderRadius: '8px',
+                  color: '#f87171',
+                  fontWeight: '700',
+                  fontSize: '14px',
+                  cursor: 'pointer',
+                  padding: '12px 0',
+                  width: '100%',
+                  textAlign: 'center'
+                }}
+              >
+                {t('Salir')}
+              </button>
+            </div>
+          </div>
+        </div>
       </header>
 
       {/* CONTENEDOR PRINCIPAL */}
-      <div style={{ display: 'flex', padding: '40px 60px', gap: '50px', maxWidth: '1400px', margin: '0 auto' }}>
+      <div className="contenedor-principal" style={{ display: 'flex', padding: '110px 60px 40px', gap: '50px', maxWidth: '1400px', margin: '0 auto' }}>
         
         {/* FILTROS LATERALES */}
-        <aside aria-label={t('filtros')} style={{ width: '220px', flexShrink: 0 }}>
+        <aside
+          className="aside-filtros"
+          aria-label={t('filtros')}
+          style={{
+            width: '220px',
+            flexShrink: 0,
+            alignSelf: 'flex-start',
+            position: 'sticky',
+            top: '90px',
+            maxHeight: 'calc(100vh - 110px)',
+            overflowY: 'auto',
+            paddingRight: '4px'
+          }}
+        >
           <h2 style={{ fontSize: '12px', fontWeight: '700', color: tema.textoDestacado, letterSpacing: '1px', marginBottom: '25px', textTransform: 'uppercase' }}>{t('filtros')}</h2>
           
           {/* TIPO DE PLANTA */}
@@ -301,7 +536,22 @@ function Catalogo() {
               <p style={{ gridColumn: '1/-1', textAlign: 'center', color: tema.textoDestacado }}>{t('no_encontrado')}</p>
             ) : (
               productosFiltrados.map((planta) => (
-                <article key={planta.id} style={{ background: tema.bgTarjeta, borderRadius: '12px', overflow: 'hidden', boxShadow: '0 4px 15px rgba(0,0,0,0.02)', display: 'flex', flexDirection: 'column', position: 'relative', opacity: planta.stock === 0 ? 0.7 : 1, transition: 'background-color 0.3s ease' }}>
+                <article
+                  key={planta.id}
+                  className="tarjeta-planta"
+                  tabIndex={0}
+                  style={{
+                    background: tema.bgTarjeta,
+                    borderRadius: '12px',
+                    overflow: 'hidden',
+                    boxShadow: '0 4px 15px rgba(0,0,0,0.02)',
+                    display: 'flex',
+                    flexDirection: 'column',
+                    position: 'relative',
+                    opacity: planta.stock === 0 ? 0.7 : 1,
+                    '--color-contorno': colorContorno
+                  }}
+                >
                   
                   <span style={{ position: 'absolute', top: '15px', left: '15px', backgroundColor: 'rgba(25, 56, 31, 0.85)', color: '#ffffff', padding: '4px 12px', borderRadius: '20px', fontSize: '11px', fontWeight: '600', zIndex: 1 }}>
                     <span style={{ position: 'absolute', width: '1px', height: '1px', padding: 0, margin: '-1px', overflow: 'hidden', clip: 'rect(0, 0, 0, 0)', border: 0 }}>Categoría: </span>
@@ -324,6 +574,12 @@ function Catalogo() {
                       </p>
                     )}
                     
+                    {planta.descripcion && (
+                      <p style={{ fontSize: '13px', color: tema.textoSecundario, margin: '0 0 15px 0', lineHeight: '1.4' }}>
+                        {planta.descripcion}
+                      </p>
+                    )}
+
                     <div style={{ display: 'flex', gap: '8px', marginBottom: '20px', flexWrap: 'wrap' }}>
                       {planta.luz && planta.luz !== 'No aplica' && (
                         <span style={{ backgroundColor: tema.bgTagLuz, color: modoOscuro ? '#aedcae' : '#19381f', padding: '4px 10px', borderRadius: '6px', fontSize: '11px', fontWeight: '600' }}>

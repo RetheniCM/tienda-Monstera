@@ -11,7 +11,6 @@ router.post('/registrar', async (req, res) => {
     return res.status(400).json({ error: "Faltan campos obligatorios" });
   }
 
-  // CORRECCIÓN AQUÍ: Limpiamos espacios y pasamos todo a minúsculas
   const correoLimpio = correo.trim().toLowerCase();
 
   let rol = 'cliente';
