@@ -27,6 +27,23 @@ function Login() {
     localStorage.setItem('tema', modoOscuro ? 'oscuro' : 'claro');
   }, [modoOscuro]);
 
+  // ==========================================
+  // ESTADO Y LÓGICA DE COLOR DE ACENTO PERSONALIZABLE
+  // ==========================================
+  const [colorAcento, setColorAcento] = useState(() => {
+    return localStorage.getItem('colorAcento') || '#19381f';
+  });
+
+  // PALETA DE 7 COLORES DISPONIBLES PARA ELEGIR
+  const coloresDisponibles = ['#e5a47e', '#19381f', '#8b5a42', '#2d6a4f', '#c1443c', '#457b9d', '#d4a017'];
+
+  useEffect(() => {
+    localStorage.setItem('colorAcento', colorAcento);
+  }, [colorAcento]);
+
+  // ESTADO DEL MENÚ HAMBURGUESA (agrupa idioma, color y modo oscuro)
+  const [menuAbierto, setMenuAbierto] = useState(false);
+
   // Paleta de colores dinámica para el Login
   const tema = {
     bgPrincipal: modoOscuro ? '#121212' : '#fbfaf7',
@@ -40,6 +57,140 @@ function Login() {
     bordeDivisor: modoOscuro ? '#333333' : '#e0dbd3',
     bgBotónTema: modoOscuro ? '#2d2d2d' : '#eae5dd'
   };
+
+  // ==========================================
+  // ESTILOS RESPONSIVOS (media queries)
+  // No alteran la paleta ni la estructura visual,
+  // solo ajustan espaciados/tamaños en pantallas chicas.
+  // ==========================================
+  const estilosResponsivos = `
+    .m-header {
+      padding: 20px 60px;
+    }
+    .m-main {
+      padding: 0 20px 60px 20px;
+    }
+    .m-card {
+      width: 100%;
+      max-width: 460px;
+      padding: 40px 45px;
+      border-radius: 16px;
+    }
+    .m-title {
+      font-size: 32px;
+    }
+    .m-divider {
+      width: 200px;
+    }
+    .m-logo-text {
+      font-size: 22px;
+    }
+
+    /* Botón hamburguesa */
+    .btn-hamburguesa {
+      display: inline-flex;
+      flex-direction: column;
+      justify-content: center;
+      gap: 5px;
+      background: none;
+      border: none;
+      cursor: pointer;
+      padding: 8px;
+      position: relative;
+      border-radius: 8px;
+    }
+    .btn-hamburguesa .linea-hamburguesa {
+      display: block;
+      width: 24px;
+      height: 2px;
+      background-color: ${tema.textoPrincipal};
+      border-radius: 2px;
+      transition: transform 0.25s ease, opacity 0.25s ease;
+    }
+
+    .menu-overlay {
+      position: fixed;
+      inset: 0;
+      z-index: 15;
+    }
+
+    .menu-desplegable {
+      position: absolute;
+      top: calc(100% + 10px);
+      right: 0;
+      background: ${tema.bgTarjeta};
+      border: 1px solid ${tema.bordeTarjeta};
+      border-radius: 10px;
+      box-shadow: 0 12px 30px rgba(0,0,0,0.18);
+      padding: 18px;
+      display: flex;
+      flex-direction: column;
+      gap: 16px;
+      min-width: 220px;
+      transform: translateY(${menuAbierto ? '0' : '-8px'});
+      opacity: ${menuAbierto ? 1 : 0};
+      visibility: ${menuAbierto ? 'visible' : 'hidden'};
+      transition: transform 0.2s ease, opacity 0.2s ease, visibility 0.2s ease;
+      z-index: 20;
+    }
+
+    /* Borde de los campos al hacer clic / enfocarlos */
+    .m-input {
+      border: 2px solid transparent !important;
+      box-sizing: border-box;
+      transition: border-color 0.2s ease, background-color 0.3s ease;
+    }
+    .m-input:focus {
+      outline: none;
+      border-color: ${colorAcento} !important;
+    }
+
+    /* Botón "Ingresar" */
+    .m-btn-ingresar {
+      transition: background-color 0.2s ease;
+    }
+    .m-btn-ingresar:hover,
+    .m-btn-ingresar:focus-visible {
+      background-color: ${colorAcento} !important;
+    }
+
+    /* Enlace "Regístrate" */
+    .m-link-registro:hover,
+    .m-link-registro:focus-visible {
+      color: ${colorAcento} !important;
+    }
+
+    @media (max-width: 640px) {
+      .m-header {
+        padding: 16px 20px;
+      }
+      .m-main {
+        padding: 0 16px 40px 16px;
+      }
+      .m-card {
+        padding: 28px 22px;
+        border-radius: 12px;
+      }
+      .m-title {
+        font-size: 24px;
+      }
+      .m-divider {
+        width: 140px;
+      }
+      .m-logo-text {
+        font-size: 19px;
+      }
+    }
+
+    @media (max-width: 380px) {
+      .m-card {
+        padding: 22px 16px;
+      }
+      .m-title {
+        font-size: 21px;
+      }
+    }
+  `;
 
   const manejarLogin = async (e) => {
     e.preventDefault();
@@ -79,84 +230,163 @@ function Login() {
 
   return (
     <div style={{ minHeight: '100vh', display: 'flex', flexDirection: 'column', backgroundColor: tema.bgPrincipal, color: tema.textoPrincipal, transition: 'background-color 0.3s ease, color 0.3s ease' }}>
-      
+      <style>{estilosResponsivos}</style>
+
       {/* BARRA DE NAVEGACIÓN */}
-      <header role="banner" style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', padding: '20px 60px', background: 'transparent' }}>
+      <header role="banner" className="m-header" style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', background: 'transparent', position: 'relative' }}>
         <div style={{ display: 'flex', alignItems: 'center', gap: '15px' }}>
           <img 
             src={logoMonstera} 
             alt="Logo Monstera - Plants & Gardening" 
             style={{ height: '40px', width: 'auto' }} 
           />
-          <span className="serif-font" style={{ fontSize: '22px', fontWeight: 'bold', letterSpacing: '0.5px', color: tema.textoPrincipal }}>Monstera</span>
+          <span className="serif-font m-logo-text" style={{ fontWeight: 'bold', letterSpacing: '0.5px', color: tema.textoPrincipal }}>Monstera</span>
         </div>
 
-        {/* SELECTOR DE IDIOMAS Y BOTÓN MODO OSCURO */}
-        <div style={{ position: 'absolute', top: '20px', right: '40px', display: 'flex', gap: '12px', alignItems: 'center' }} role="navigation" aria-label="Configuración de interfaz">
-          <button 
-            onClick={() => i18n.changeLanguage('es')} 
-            style={{ fontWeight: i18n.language === 'es' ? '700' : '400', cursor: 'pointer', background: 'none', border: 'none', color: tema.textoPrincipal, fontSize: '14px', padding: '5px' }}
-          >
-            🇲🇽 ES
-          </button>
-          <span style={{ color: '#ccc' }} aria-hidden="true">|</span>
-          <button 
-            onClick={() => i18n.changeLanguage('en')} 
-            style={{ fontWeight: i18n.language === 'en' ? '700' : '400', cursor: 'pointer', background: 'none', border: 'none', color: tema.textoPrincipal, fontSize: '14px', padding: '5px' }}
-          >
-            🇺🇸 EN
-          </button>
-          <span style={{ color: '#ccc' }} aria-hidden="true">|</span>
-          <button 
-            onClick={() => i18n.changeLanguage('ja')} 
-            style={{ fontWeight: i18n.language === 'ja' ? '700' : '400', cursor: 'pointer', background: 'none', border: 'none', color: tema.textoPrincipal, fontSize: '14px', padding: '5px' }}
-          >
-            🇯🇵 JA
-          </button>
-
-          <span style={{ color: '#ccc' }} aria-hidden="true">|</span>
-
-          {/* BOTÓN INTERACTIVO MODO OSCURO CON IMAGEN */}
+        {/* MENÚ DE OPCIONES: color, idioma y modo oscuro */}
+        <div style={{ position: 'relative' }}>
           <button
-            onClick={() => setModoOscuro(!modoOscuro)}
-            aria-label={modoOscuro ? "Cambiar a modo claro" : "Cambiar a modo oscuro"}
-            style={{ 
-              background: tema.bgBotónTema, 
-              border: 'none', 
-              cursor: 'pointer', 
-              padding: '6px', 
-              borderRadius: '50%', 
-              display: 'inline-flex', 
-              alignItems: 'center',
-              justifyContent: 'center',
-              transition: 'background-color 0.3s ease',
-              width: '34px',       
-              height: '34px'       
-            }}
+            className="btn-hamburguesa"
+            onClick={() => setMenuAbierto(!menuAbierto)}
+            aria-label={menuAbierto ? 'Cerrar menú' : 'Abrir menú de opciones'}
+            aria-expanded={menuAbierto}
+            aria-haspopup="true"
           >
-            <img 
-              src={modoOscuro ? iconoSol : iconoLuna} 
-              alt={modoOscuro ? "Icono de Sol" : "Icono de Luna"} 
-              style={{ width: '18px', height: '18px', objectFit: 'contain' }} 
-            />
+            {menuAbierto ? (
+              <span style={{ fontSize: '18px', lineHeight: 1, color: tema.textoPrincipal }} aria-hidden="true">✕</span>
+            ) : (
+              <>
+                <span className="linea-hamburguesa" />
+                <span className="linea-hamburguesa" />
+                <span className="linea-hamburguesa" />
+              </>
+            )}
           </button>
+
+          {menuAbierto && (
+            <div className="menu-overlay" onClick={() => setMenuAbierto(false)} aria-hidden="true" />
+          )}
+
+          <div className="menu-desplegable" role="menu" aria-label="Opciones de interfaz">
+
+            {/* COLOR DE ACENTO */}
+            <div>
+              <span style={{ display: 'block', fontSize: '11px', fontWeight: '700', letterSpacing: '1px', textTransform: 'uppercase', color: tema.textoSecundario, marginBottom: '12px' }}>
+                {t('color') || 'Color de acento'}
+              </span>
+              <div role="group" aria-label="Paleta de colores de acento" style={{ display: 'flex', flexWrap: 'wrap', gap: '10px' }}>
+                {coloresDisponibles.map((color) => {
+                  const seleccionado = colorAcento.toLowerCase() === color.toLowerCase();
+                  return (
+                    <button
+                      key={color}
+                      type="button"
+                      onClick={() => setColorAcento(color)}
+                      aria-label={`Color de acento ${color}`}
+                      aria-pressed={seleccionado}
+                      title={color}
+                      style={{
+                        width: '26px',
+                        height: '26px',
+                        borderRadius: '50%',
+                        backgroundColor: color,
+                        cursor: 'pointer',
+                        border: seleccionado ? `2px solid ${tema.textoPrincipal}` : '2px solid transparent',
+                        boxShadow: seleccionado ? `0 0 0 2px ${tema.bgTarjeta}, 0 0 0 4px ${color}` : 'none',
+                        padding: 0,
+                        display: 'flex',
+                        alignItems: 'center',
+                        justifyContent: 'center'
+                      }}
+                    >
+                      {seleccionado && (
+                        <span aria-hidden="true" style={{ color: '#ffffff', fontSize: '11px', fontWeight: '700', textShadow: '0 1px 2px rgba(0,0,0,0.5)' }}>✓</span>
+                      )}
+                    </button>
+                  );
+                })}
+              </div>
+            </div>
+
+            <hr style={{ border: 'none', height: '1px', backgroundColor: tema.bordeDivisor, margin: 0 }} aria-hidden="true" />
+
+            {/* IDIOMA */}
+            <div>
+              <span style={{ display: 'block', fontSize: '11px', fontWeight: '700', letterSpacing: '1px', textTransform: 'uppercase', color: tema.textoSecundario, marginBottom: '12px' }}>
+                {t('idioma') || 'Idioma'}
+              </span>
+              <div role="navigation" aria-label="Selección de idioma" style={{ display: 'inline-flex', backgroundColor: tema.bgInput, borderRadius: '8px', padding: '4px', gap: '4px' }}>
+                <button
+                  onClick={() => i18n.changeLanguage('es')}
+                  style={{ fontWeight: i18n.language === 'es' ? '700' : '400', cursor: 'pointer', background: i18n.language === 'es' ? tema.bgTarjeta : 'none', border: 'none', borderRadius: '6px', color: tema.textoPrincipal, fontSize: '13px', padding: '6px 10px' }}
+                >
+                  🇲🇽 ES
+                </button>
+                <button
+                  onClick={() => i18n.changeLanguage('en')}
+                  style={{ fontWeight: i18n.language === 'en' ? '700' : '400', cursor: 'pointer', background: i18n.language === 'en' ? tema.bgTarjeta : 'none', border: 'none', borderRadius: '6px', color: tema.textoPrincipal, fontSize: '13px', padding: '6px 10px' }}
+                >
+                  🇺🇸 EN
+                </button>
+                <button
+                  onClick={() => i18n.changeLanguage('ja')}
+                  style={{ fontWeight: i18n.language === 'ja' ? '700' : '400', cursor: 'pointer', background: i18n.language === 'ja' ? tema.bgTarjeta : 'none', border: 'none', borderRadius: '6px', color: tema.textoPrincipal, fontSize: '13px', padding: '6px 10px' }}
+                >
+                  🇯🇵 JA
+                </button>
+              </div>
+            </div>
+
+            <hr style={{ border: 'none', height: '1px', backgroundColor: tema.bordeDivisor, margin: 0 }} aria-hidden="true" />
+
+            {/* MODO OSCURO */}
+            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+              <span style={{ fontSize: '13px', fontWeight: '500', color: tema.textoPrincipal }}>
+                {modoOscuro ? (t('ModoClaro') || 'Modo Claro') : (t('ModoOscuro') || 'Modo Oscuro')}
+              </span>
+              <button
+                onClick={() => setModoOscuro(!modoOscuro)}
+                aria-label={modoOscuro ? "Cambiar a modo claro" : "Cambiar a modo oscuro"}
+                style={{
+                  background: tema.bgBotónTema,
+                  border: 'none',
+                  cursor: 'pointer',
+                  padding: '6px',
+                  borderRadius: '50%',
+                  display: 'inline-flex',
+                  alignItems: 'center',
+                  justifyContent: 'center',
+                  transition: 'background-color 0.3s ease',
+                  width: '34px',
+                  height: '34px'
+                }}
+              >
+                <img
+                  src={modoOscuro ? iconoSol : iconoLuna}
+                  alt={modoOscuro ? "Icono de Sol" : "Icono de Luna"}
+                  style={{ width: '18px', height: '18px', objectFit: 'contain' }}
+                />
+              </button>
+            </div>
+
+          </div>
         </div>
       </header>
 
       {/* CONTENIDO CENTRAL */}
-      <main role="main" style={{ flex: 1, display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', paddingBottom: '60px' }}>
+      <main role="main" className="m-main" style={{ flex: 1, display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center' }}>
         
         {/* Divisor decorativo adaptivo */}
-        <div style={{ display: 'flex', alignItems: 'center', width: '200px', margin: '0 auto 20px auto' }} aria-hidden="true">
+        <div className="m-divider" style={{ display: 'flex', alignItems: 'center', margin: '0 auto 20px auto' }} aria-hidden="true">
           <div style={{ flex: 1, height: '1px', backgroundColor: tema.bordeDivisor }}></div>
           <span style={{ margin: '0 10px', color: modoOscuro ? '#aedcae' : '#12331b', fontSize: '14px' }}>💧</span>
           <div style={{ flex: 1, height: '1px', backgroundColor: tema.bordeDivisor }}></div>
         </div>
 
         {/* TARJETA DE LOGIN */}
-        <section aria-labelledby="login-title" style={{ background: tema.bgTarjeta, width: '100%', maxWidth: '460px', padding: '40px 45px', borderRadius: '16px', boxShadow: modoOscuro ? '0 10px 30px rgba(0, 0, 0, 0.3)' : '0 10px 30px rgba(0, 0, 0, 0.04)', border: `1px solid ${tema.bordeTarjeta}`, transition: 'background-color 0.3s ease, border-color 0.3s ease' }}>
+        <section aria-labelledby="login-title" className="m-card" style={{ background: tema.bgTarjeta, boxShadow: modoOscuro ? '0 10px 30px rgba(0, 0, 0, 0.3)' : '0 10px 30px rgba(0, 0, 0, 0.04)', border: `1px solid ${tema.bordeTarjeta}`, transition: 'background-color 0.3s ease, border-color 0.3s ease' }}>
           
-          <h2 id="login-title" style={{ textAlign: 'center', fontSize: '32px', marginBottom: '6px', fontWeight: '700', color: tema.textoPrincipal }}>{t('iniciar_sesion')}</h2>
+          <h2 id="login-title" className="m-title" style={{ textAlign: 'center', marginBottom: '6px', fontWeight: '700', color: tema.textoPrincipal }}>{t('iniciar_sesion')}</h2>
           <p style={{ fontFamily: 'Georgia, serif', fontStyle: 'italic', color: tema.textoDestacado, textAlign: 'center', marginBottom: '30px', fontSize: '15px' }}>{t('saludo')}</p>
 
           <form onSubmit={manejarLogin}>
@@ -169,6 +399,7 @@ function Login() {
               <input 
                 id="correo-input"
                 type="email" 
+                className="m-input"
                 placeholder={t('correo_aqui')}
                 value={correo} 
                 onChange={(e) => setCorreo(e.target.value)} 
@@ -186,6 +417,7 @@ function Login() {
               <input 
                 id="contrasena-input"
                 type="password" 
+                className="m-input"
                 placeholder="••••••••"
                 value={contrasena} 
                 onChange={(e) => setContrasena(e.target.value)} 
@@ -195,7 +427,7 @@ function Login() {
               />
             </div>
 
-            <button type="submit" style={{ width: '100%', padding: '14px', backgroundColor: '#19381f', color: '#ffffff', border: 'none', borderRadius: '8px', fontSize: '14px', fontWeight: '700', letterSpacing: '1px', cursor: 'pointer' }}>
+            <button type="submit" className="m-btn-ingresar" style={{ width: '100%', padding: '14px', backgroundColor: '#19381f', color: '#ffffff', border: 'none', borderRadius: '8px', fontSize: '14px', fontWeight: '700', letterSpacing: '1px', cursor: 'pointer' }}>
               {t('boton_ingresar')}
             </button>
           </form>
@@ -224,7 +456,7 @@ function Login() {
             </div>
             <p style={{ fontSize: '14px', color: tema.textoSecundario }}>
                {t('pregunta_registro')}
-               <Link to="/registro" style={{ color: modoOscuro ? '#aedcae' : '#19381f', fontWeight: '700', textDecoration: 'underline', marginLeft: '5px' }}>
+               <Link to="/registro" className="m-link-registro" style={{ color: modoOscuro ? '#aedcae' : '#19381f', fontWeight: '700', textDecoration: 'underline', marginLeft: '5px' }}>
                  {t('registro')}
                </Link>
             </p>

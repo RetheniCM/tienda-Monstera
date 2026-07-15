@@ -5,3 +5,4 @@ frontend/node_modules/
 # Ignorar archivos de configuración local y secretos
 .env
 .DS_Store
+.db.js

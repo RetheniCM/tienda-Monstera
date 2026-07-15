@@ -26,6 +26,9 @@ function Dashboard() {
     return localStorage.getItem('colorHoverPersonalizado') || '#1e4620';
   });
 
+  // PALETA DE 7 COLORES DISPONIBLES PARA ELEGIR
+  const coloresDisponibles = ['#e5a47e', '#19381f', '#8b5a42', '#2d6a4f', '#c1443c', '#457b9d', '#d4a017'];
+
   // Guardar preferencia de color del usuario
   useEffect(() => {
     localStorage.setItem('colorHoverPersonalizado', colorHoverUsuario);
@@ -262,10 +265,125 @@ function Dashboard() {
           border-width: 2px !important;
           box-shadow: 0 10px 25px rgba(0,0,0,0.25) !important;
         }
+
+        /* Borde del buscador al hacer clic / enfocarlo */
+        .dash-buscador {
+          border: 1px solid ${tema.borde} !important;
+          transition: border-color 0.2s ease, background-color 0.3s ease;
+          box-sizing: border-box;
+        }
+        .dash-buscador:focus {
+          outline: none;
+          border-color: ${colorHoverUsuario} !important;
+        }
+
+        /* Botón "Agregar producto" */
+        .dash-btn-agregar {
+          transition: background-color 0.2s ease;
+        }
+        .dash-btn-agregar:hover,
+        .dash-btn-agregar:focus-visible {
+          background-color: ${colorHoverUsuario} !important;
+        }
+
+        /* Botón de categorías */
+        .dash-btn-categoria {
+          transition: background-color 0.2s ease, color 0.2s ease, border-color 0.2s ease;
+        }
+        .dash-btn-categoria:hover,
+        .dash-btn-categoria:focus-visible {
+          background-color: ${colorHoverUsuario} !important;
+          border-color: ${colorHoverUsuario} !important;
+          color: #ffffff !important;
+        }
+
+        /* Interruptor de vista (Tabla / Tarjetas) */
+        .dash-btn-vista {
+          transition: background-color 0.2s ease, color 0.2s ease;
+        }
+        .dash-btn-vista:hover,
+        .dash-btn-vista:focus-visible {
+          background-color: ${colorHoverUsuario} !important;
+          color: #ffffff !important;
+        }
+
+        /* Editar / Eliminar en la tabla (estilo enlace) */
+        .dash-btn-editar-tabla:hover,
+        .dash-btn-editar-tabla:focus-visible,
+        .dash-btn-eliminar-tabla:hover,
+        .dash-btn-eliminar-tabla:focus-visible {
+          color: ${colorHoverUsuario} !important;
+          text-decoration: underline;
+        }
+
+        /* Editar / Eliminar en las tarjetas (estilo botón) */
+        .dash-btn-editar-tarjeta,
+        .dash-btn-eliminar-tarjeta {
+          transition: background-color 0.2s ease, color 0.2s ease, border-color 0.2s ease;
+        }
+        .dash-btn-editar-tarjeta:hover,
+        .dash-btn-editar-tarjeta:focus-visible,
+        .dash-btn-eliminar-tarjeta:hover,
+        .dash-btn-eliminar-tarjeta:focus-visible {
+          background-color: ${colorHoverUsuario} !important;
+          border-color: ${colorHoverUsuario} !important;
+          color: #ffffff !important;
+        }
+
+        @media (max-width: 900px) {
+          .dash-header {
+            padding: 12px 20px !important;
+          }
+          .dash-header-menu {
+            right: 12px !important;
+          }
+          .dash-main {
+            padding: 30px 20px !important;
+            padding-top: 90px !important;
+          }
+          .dash-title {
+            font-size: 28px !important;
+          }
+          .dash-metricas {
+            grid-template-columns: repeat(2, 1fr) !important;
+          }
+          .dash-toolbar {
+            flex-wrap: wrap !important;
+          }
+          .dash-buscador {
+            flex: 1 1 100% !important;
+          }
+          .dash-categoria-wrap {
+            flex: 1 1 auto !important;
+          }
+          .dash-btn-agregar {
+            flex: 1 1 auto !important;
+          }
+        }
+
+        @media (max-width: 560px) {
+          .dash-metricas {
+            grid-template-columns: 1fr !important;
+          }
+          .dash-header-menu {
+            left: 12px !important;
+            right: 12px !important;
+            width: auto !important;
+            min-width: 0 !important;
+          }
+          .dash-modal {
+            width: 92vw !important;
+            padding: 22px !important;
+          }
+          .dash-modal-campo-doble {
+            flex-direction: column !important;
+            gap: 15px !important;
+          }
+        }
       `}</style>
       
       {/* HEADER SUPERIOR */}
-        <header style={{ 
+        <header className="dash-header" style={{ 
           display: 'flex', 
           justifyContent: 'space-between', 
           alignItems: 'center', 
@@ -298,20 +416,42 @@ function Dashboard() {
 
         {/* MENÚ DESPLEGABLE DE HAMBURGUESA */}
         {menuHamburguesaOpen && (
-          <div style={{ position: 'absolute', top: '100%', right: '40px', marginTop: '10px', backgroundColor: tema.bgTarjeta, border: `1px solid ${tema.borde}`, borderRadius: '14px', boxShadow: '0 8px 30px rgba(0,0,0,0.25)', padding: '20px', display: 'flex', flexDirection: 'column', gap: '15px', zIndex: 200, minWidth: '240px' }}>
+          <div style={{ position: 'absolute', top: '100%', right: '40px', marginTop: '10px', backgroundColor: tema.bgTarjeta, border: `1px solid ${tema.borde}`, borderRadius: '14px', boxShadow: '0 8px 30px rgba(0,0,0,0.25)', padding: '20px', display: 'flex', flexDirection: 'column', gap: '15px', zIndex: 200, minWidth: '240px' }} className="dash-header-menu">
             
             {/* SECCIÓN 1: PERSONALIZADOR DE COLOR (HOVER) */}
             <div style={{ borderBottom: `1px solid ${tema.borde}`, paddingBottom: '12px' }}>
               <span style={{ fontSize: '12px', fontWeight: '600', color: tema.textoSecundario, display: 'block', marginBottom: '8px', textTransform: 'uppercase' }}>{t('color')}</span>
-              <div style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
-                <input 
-                  type="color" 
-                  value={colorHoverUsuario}
-                  onChange={(e) => setColorHoverUsuario(e.target.value)}
-                  style={{ border: 'none', width: '35px', height: '35px', borderRadius: '50%', cursor: 'pointer', backgroundColor: 'transparent' }}
-                  title=" Elige tu color interactivo"
-                />
-                <span style={{ fontSize: '13px', fontFamily: 'monospace', color: tema.textoPrincipal }}>{colorHoverUsuario.toUpperCase()}</span>
+              <div role="group" aria-label="Paleta de colores de interacción" style={{ display: 'flex', flexWrap: 'wrap', gap: '10px' }}>
+                {coloresDisponibles.map((color) => {
+                  const seleccionado = colorHoverUsuario.toLowerCase() === color.toLowerCase();
+                  return (
+                    <button
+                      key={color}
+                      type="button"
+                      onClick={() => setColorHoverUsuario(color)}
+                      aria-label={`Color ${color}`}
+                      aria-pressed={seleccionado}
+                      title={color}
+                      style={{
+                        width: '30px',
+                        height: '30px',
+                        borderRadius: '50%',
+                        backgroundColor: color,
+                        cursor: 'pointer',
+                        border: seleccionado ? `2px solid ${tema.textoPrincipal}` : '2px solid transparent',
+                        boxShadow: seleccionado ? `0 0 0 2px ${tema.bgTarjeta}, 0 0 0 4px ${color}` : 'none',
+                        padding: 0,
+                        display: 'flex',
+                        alignItems: 'center',
+                        justifyContent: 'center'
+                      }}
+                    >
+                      {seleccionado && (
+                        <span aria-hidden="true" style={{ color: '#ffffff', fontSize: '13px', fontWeight: '700', textShadow: '0 1px 2px rgba(0,0,0,0.5)' }}>✓</span>
+                      )}
+                    </button>
+                  );
+                })}
               </div>
             </div>
 
@@ -351,8 +491,8 @@ function Dashboard() {
       </header>
 
       {/* PANEL PRINCIPAL */}
-      <main style={{ padding: '40px', paddingTop: '100px' }}>
-        <h1 style={{ fontSize: '36px', color: tema.textoTitulo, margin: '0 0 5px 0', fontFamily: 'serif', fontWeight: '700' }}>
+      <main className="dash-main" style={{ padding: '40px', paddingTop: '100px' }}>
+        <h1 className="dash-title" style={{ fontSize: '36px', color: tema.textoTitulo, margin: '0 0 5px 0', fontFamily: 'serif', fontWeight: '700' }}>
           {t('panel_control')}
         </h1>
         <p style={{ color: tema.textoSecundario, margin: '0 0 30px 0', fontSize: '15px' }}>
@@ -360,7 +500,7 @@ function Dashboard() {
         </p>
 
         {/* MÉTRICAS */}
-        <div style={{ display: 'grid', gridTemplateColumns: 'repeat(4, 1fr)', gap: '20px', marginBottom: '30px' }}>
+        <div className="dash-metricas" style={{ display: 'grid', gridTemplateColumns: 'repeat(4, 1fr)', gap: '20px', marginBottom: '30px' }}>
           <div style={{ background: tema.bgTarjeta, padding: '20px', borderRadius: '12px', border: `1px solid ${tema.borde}` }}>
             <div style={{ fontSize: '12px', color: tema.textoSecundario, fontWeight: '600', textTransform: 'uppercase' }}>{t('productos')}</div>
             <div style={{ fontSize: '28px', fontWeight: '700', color: tema.textoTitulo, margin: '5px 0' }}>{totalProductos}</div>
@@ -384,17 +524,19 @@ function Dashboard() {
         </div>
 
         {/* BUSCADOR Y FILTROS */}
-        <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: '20px', gap: '15px', alignItems: 'stretch' }}>
+        <div className="dash-toolbar" style={{ display: 'flex', justifyContent: 'space-between', marginBottom: '20px', gap: '15px', alignItems: 'stretch' }}>
           <input 
             type="text" 
+            className="dash-buscador"
             placeholder={t('buscar_placeholder')}
             value={busqueda}
             onChange={(e) => setBusqueda(e.target.value)}
             style={{ flex: 1, padding: '12px 20px', borderRadius: '8px', border: `1px solid ${tema.borde}`, backgroundColor: tema.bgInput, color: tema.textoPrincipal }}
           />
-          <div style={{ position: 'relative', display: 'inline-block' }}>
+          <div className="dash-categoria-wrap" style={{ position: 'relative', display: 'inline-block' }}>
             <button 
                 type="button"
+                className="dash-btn-categoria"
                 onClick={() => setMenuCategoriasOpen(!menuCategoriasOpen)}
                 style={{ padding: '10px 15px', borderRadius: '8px', border: `1px solid ${modoOscuro ? '#aedcae' : '#1e4620'}`, background: tema.bgTarjeta, color: modoOscuro ? '#aedcae' : '#1e4620', cursor: 'pointer', fontWeight: '500', height: '100%', minWidth: '120px' }}
             >
@@ -432,8 +574,9 @@ function Dashboard() {
           </div>
 
           {/* INTERRUPTOR DE VISTAS (Tabla vs Tarjetas) */}
-          <div style={{ display: 'flex', borderRadius: '8px', overflow: 'hidden', border: `1px solid ${tema.borde}`, backgroundColor: tema.bgTarjeta }}>
+          <div className="dash-vista-switch" style={{ display: 'flex', borderRadius: '8px', overflow: 'hidden', border: `1px solid ${tema.borde}`, backgroundColor: tema.bgTarjeta }}>
             <button
+              className="dash-btn-vista"
               onClick={() => setVistaLayout('tabla')}
               title="Vista de Tabla"
               style={{ padding: '0 15px', border: 'none', background: vistaLayout === 'tabla' ? tema.bgInput : 'transparent', color: tema.textoPrincipal, cursor: 'pointer', display: 'flex', alignItems: 'center', fontSize: '16px' }}
@@ -441,6 +584,7 @@ function Dashboard() {
               ☰
             </button>
             <button
+              className="dash-btn-vista"
               onClick={() => setVistaLayout('tarjetas')}
               title="Vista de Tarjetas"
               style={{ padding: '0 15px', border: 'none', background: vistaLayout === 'tarjetas' ? tema.bgInput : 'transparent', color: tema.textoPrincipal, cursor: 'pointer', display: 'flex', alignItems: 'center', fontSize: '16px' }}
@@ -449,7 +593,7 @@ function Dashboard() {
             </button>
           </div>
 
-          <button onClick={abrirModalAgregar} style={{ padding: '10px 20px', borderRadius: '8px', backgroundColor: modoOscuro ? '#2d4a30' : '#1e4620', color: modoOscuro ? '#aedcae' : 'white', border: 'none', cursor: 'pointer', fontWeight: '600' }}>
+          <button className="dash-btn-agregar" onClick={abrirModalAgregar} style={{ padding: '10px 20px', borderRadius: '8px', backgroundColor: modoOscuro ? '#2d4a30' : '#1e4620', color: modoOscuro ? '#aedcae' : 'white', border: 'none', cursor: 'pointer', fontWeight: '600' }}>
             {t('agregar_producto')}
           </button>
         </div>
@@ -457,8 +601,8 @@ function Dashboard() {
         {/* CONTENEDOR DINÁMICO LAYOUT */}
         {vistaLayout === 'tabla' ? (
           /* VISTA DE TABLA */
-          <div style={{ backgroundColor: tema.bgTarjeta, borderRadius: '12px', border: `1px solid ${tema.borde}`, overflow: 'hidden' }}>
-            <table style={{ width: '100%', borderCollapse: 'collapse', textAlign: 'left', fontSize: '14px' }}>
+          <div style={{ backgroundColor: tema.bgTarjeta, borderRadius: '12px', border: `1px solid ${tema.borde}`, overflowX: 'auto', overflowY: 'hidden' }}>
+            <table style={{ width: '100%', minWidth: '650px', borderCollapse: 'collapse', textAlign: 'left', fontSize: '14px' }}>
               <thead>
                 <tr style={{ borderBottom: `1px solid ${tema.borde}`, color: tema.textoSecundario, backgroundColor: tema.bgTablaHeader, fontSize: '12px', textTransform: 'uppercase' }}>
                   <th style={{ padding: '15px' }}>{t('id')}</th>
@@ -502,8 +646,8 @@ function Dashboard() {
                       {producto.stock} uds. {producto.stock <= 7 && `(${t('critico')})`}
                     </td>
                     <td style={{ padding: '15px' }}>
-                      <button onClick={() => abrirModalEditar(producto)} style={{ background: 'none', border: 'none', cursor: 'pointer', marginRight: '12px', color: modoOscuro ? '#6ba4e8' : '#0066cc' }}>{t('editar')}</button>
-                      <button onClick={() => manejarEliminar(producto.id_producto)} style={{ background: 'none', border: 'none', cursor: 'pointer', color: tema.metricaCritico }}>{t('eliminar')}</button>
+                      <button className="dash-btn-editar-tabla" onClick={() => abrirModalEditar(producto)} style={{ background: 'none', border: 'none', cursor: 'pointer', marginRight: '12px', color: modoOscuro ? '#6ba4e8' : '#0066cc' }}>{t('editar')}</button>
+                      <button className="dash-btn-eliminar-tabla" onClick={() => manejarEliminar(producto.id_producto)} style={{ background: 'none', border: 'none', cursor: 'pointer', color: tema.metricaCritico }}>{t('eliminar')}</button>
                     </td>
                   </tr>
                 ))}
@@ -572,12 +716,14 @@ function Dashboard() {
 
                     <div style={{ display: 'flex', gap: '10px', justifyContent: 'flex-end' }}>
                       <button 
+                        className="dash-btn-editar-tarjeta"
                         onClick={() => abrirModalEditar(producto)} 
                         style={{ padding: '6px 12px', borderRadius: '6px', border: `1px solid ${tema.borde}`, background: 'transparent', color: modoOscuro ? '#6ba4e8' : '#0066cc', cursor: 'pointer', fontSize: '13px', fontWeight: '500' }}
                       >
                         {t('editar')} 
                       </button>
                       <button 
+                        className="dash-btn-eliminar-tarjeta"
                         onClick={() => manejarEliminar(producto.id_producto)} 
                         style={{ padding: '6px 12px', borderRadius: '6px', border: 'none', background: modoOscuro ? '#442222' : '#fde8e8', color: tema.metricaCritico, cursor: 'pointer', fontSize: '13px', fontWeight: '500' }}
                       >
@@ -595,7 +741,7 @@ function Dashboard() {
       {/* MODAL AGREGAR / EDITAR */}
       {(modalAgregarOpen || modalEditarOpen) && (
         <div style={{ position: 'fixed', top: 0, left: 0, width: '100vw', height: '100vh', backgroundColor: modoOscuro ? 'rgba(0, 0, 0, 0.7)' : 'rgba(19, 44, 21, 0.4)', backdropFilter: 'blur(4px)', display: 'flex', justifyContent: 'center', alignItems: 'center', zIndex: 1000 }}>
-          <div style={{ backgroundColor: tema.bgTarjeta, padding: '35px', borderRadius: '20px', width: '480px', maxHeight: '90vh', overflowY: 'auto', boxShadow: '0 10px 25px rgba(0,0,0,0.3)', position: 'relative', border: `1px solid ${tema.borde}` }}>
+          <div className="dash-modal" style={{ backgroundColor: tema.bgTarjeta, padding: '35px', borderRadius: '20px', width: '480px', maxWidth: '92vw', maxHeight: '90vh', overflowY: 'auto', boxShadow: '0 10px 25px rgba(0,0,0,0.3)', position: 'relative', border: `1px solid ${tema.borde}` }}>
             
             <button 
               onClick={() => { setModalAgregarOpen(false); setModalEditarOpen(false); }} 
@@ -644,7 +790,7 @@ function Dashboard() {
                 />
               </div>
 
-              <div style={{ display: 'flex', gap: '15px', marginBottom: '15px' }}>
+              <div className="dash-modal-campo-doble" style={{ display: 'flex', gap: '15px', marginBottom: '15px' }}>
                 <div style={{ flex: 1 }}>
                   <label style={{ display: 'block', fontSize: '14px', fontWeight: '600', color: tema.textoPrincipal, marginBottom: '6px' }}>{t('categoria')}</label>
                   <select 
@@ -670,7 +816,7 @@ function Dashboard() {
                 </div>
               </div>
 
-              <div style={{ display: 'flex', gap: '15px', marginBottom: '25px' }}>
+              <div className="dash-modal-campo-doble" style={{ display: 'flex', gap: '15px', marginBottom: '25px' }}>
                 <div style={{ flex: 1 }}>
                   <label style={{ display: 'block', fontSize: '14px', fontWeight: '600', color: tema.textoPrincipal, marginBottom: '6px' }}>{t('stock')}</label>
                   <input 
@@ -693,7 +839,7 @@ function Dashboard() {
                 </div>
               </div>
               
-              <div style={{ display: 'flex', gap: '20px', marginBottom: '25px' }}>
+              <div className="dash-modal-campo-doble" style={{ display: 'flex', gap: '20px', marginBottom: '25px' }}>
                 <div style={{ flex: 1 }}>
                   <label style={{ display: 'block', fontSize: '14px', fontWeight: '500', color: tema.textoPrincipal, marginBottom: '5px' }}>
                     {t('lbl_nivel_riego')}

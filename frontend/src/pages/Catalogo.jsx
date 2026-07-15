@@ -56,6 +56,9 @@ function Catalogo() {
   // ESTADO DEL MENÚ HAMBURGUESA (navegación / filtros en pantallas pequeñas)
   const [menuMovilAbierto, setMenuMovilAbierto] = useState(false);
 
+  // ESTADO DEL PANEL DE FILTROS EN CELULARES (colapsado por defecto)
+  const [filtrosAbiertos, setFiltrosAbiertos] = useState(false);
+
   // ESTADO DEL HEADER "INTELIGENTE": se oculta al bajar, reaparece al subir
   const [headerVisible, setHeaderVisible] = useState(true);
 
@@ -88,6 +91,9 @@ function Catalogo() {
   const [colorContorno, setColorContorno] = useState(() => {
     return localStorage.getItem('colorContorno') || '#e5a47e';
   });
+
+  // PALETA DE 7 COLORES DISPONIBLES PARA ELEGIR
+  const coloresDisponibles = ['#e5a47e', '#19381f', '#8b5a42', '#2d6a4f', '#c1443c', '#457b9d', '#d4a017'];
 
   useEffect(() => {
     localStorage.setItem('colorContorno', colorContorno);
@@ -167,7 +173,7 @@ function Catalogo() {
   });
 
   return (
-    <div style={{ minHeight: '100vh', backgroundColor: tema.bgPrincipal, color: tema.textoPrincipal, fontFamily: 'system-ui, sans-serif', transition: 'background-color 0.3s ease, color 0.3s ease' }}>
+    <div style={{ minHeight: '100vh', backgroundColor: tema.bgPrincipal, color: tema.textoPrincipal, fontFamily: 'system-ui, sans-serif', transition: 'background-color 0.3s ease, color 0.3s ease', '--color-contorno': colorContorno }}>
 
       {/* ESTILOS GLOBALES: hover de tarjetas, menú hamburguesa y responsive */}
       <style>{`
@@ -181,6 +187,35 @@ function Catalogo() {
           border-color: var(--color-contorno);
           box-shadow: 0 10px 25px rgba(0,0,0,0.15);
           z-index: 2;
+        }
+
+        /* Borde del buscador al hacer clic / enfocarlo */
+        #buscador-plantas {
+          border: 2px solid transparent !important;
+          transition: border-color 0.2s ease, background-color 0.3s ease;
+          box-sizing: border-box;
+        }
+        #buscador-plantas:focus {
+          outline: none;
+          border-color: var(--color-contorno) !important;
+        }
+
+        /* Botón de carrito del header */
+        .cat-btn-carrito {
+          transition: background-color 0.2s ease, color 0.2s ease;
+        }
+        .cat-btn-carrito:hover,
+        .cat-btn-carrito:focus-visible {
+          background-color: var(--color-contorno) !important;
+        }
+
+        /* Botón "Añadir" de cada tarjeta */
+        .cat-btn-anadir {
+          transition: background-color 0.2s ease, color 0.2s ease;
+        }
+        .cat-btn-anadir:hover:not(:disabled),
+        .cat-btn-anadir:focus-visible:not(:disabled) {
+          background-color: var(--color-contorno) !important;
         }
 
         .btn-hamburguesa {
@@ -201,6 +236,10 @@ function Catalogo() {
           background-color: ${tema.textoPrincipal};
           border-radius: 2px;
           transition: transform 0.25s ease, opacity 0.25s ease;
+        }
+
+        .cat-filtros-toggle {
+          display: none;
         }
 
         .menu-overlay {
@@ -232,6 +271,7 @@ function Catalogo() {
         @media (max-width: 900px) {
           .contenedor-principal {
             flex-direction: column;
+            padding: 100px 24px 30px !important;
           }
           .aside-filtros {
             width: 100% !important;
@@ -242,14 +282,73 @@ function Catalogo() {
             flex: 1 1 auto !important;
             margin: 0 12px !important;
           }
+          .cat-filtros-titulo-desktop {
+            display: none;
+          }
+          .cat-filtros-toggle {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 12px 4px;
+            border-bottom: 1px solid ${tema.bordeSeparador};
+            margin-bottom: 0;
+          }
+          .cat-filtros-flecha {
+            display: inline-block;
+            transition: transform 0.2s ease;
+            font-size: 14px;
+          }
+          .cat-filtros-contenido {
+            display: none;
+            padding-top: 20px;
+          }
+          .cat-filtros-contenido.abierto {
+            display: block;
+          }
+        }
+
+        @media (max-width: 600px) {
+          .cat-header {
+            padding: 12px 16px !important;
+            gap: 10px !important;
+          }
+          .cat-logo-text {
+            display: none;
+          }
+          .buscador-central {
+            margin: 0 8px !important;
+          }
+          .cat-btn-carrito {
+            padding: 8px 12px !important;
+            font-size: 12px !important;
+          }
+          .contenedor-principal {
+            padding: 92px 16px 24px !important;
+            gap: 24px !important;
+          }
+          .cat-h1 {
+            font-size: 24px !important;
+          }
+          .tarjeta-planta {
+            font-size: 15px;
+          }
+        }
+
+        @media (max-width: 400px) {
+          .cat-carrito-texto {
+            display: none;
+          }
+          .cat-btn-carrito {
+            padding: 8px 10px !important;
+          }
         }
       `}</style>
 
       {/* HEADER ACCESIBLE */}
-      <header role="banner" style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', padding: '15px 30px', background: tema.bgHeader, borderBottom: `1px solid ${tema.bordeHeader}`, position: 'fixed', top: 0, left: 0, right: 0, gap: '20px', zIndex: 30, transform: headerVisible ? 'translateY(0)' : 'translateY(-100%)', transition: 'transform 0.3s ease, background-color 0.3s ease' }}>
+      <header role="banner" className="cat-header" style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', padding: '15px 30px', background: tema.bgHeader, borderBottom: `1px solid ${tema.bordeHeader}`, position: 'fixed', top: 0, left: 0, right: 0, gap: '20px', zIndex: 30, transform: headerVisible ? 'translateY(0)' : 'translateY(-100%)', transition: 'transform 0.3s ease, background-color 0.3s ease' }}>
         <div style={{ display: 'flex', alignItems: 'center', gap: '12px', flexShrink: 0 }}>
           <img src={logoMonstera} alt="Monstera - Logotipo de la tienda de plantas" style={{ height: '35px', width: 'auto' }} />
-          <span style={{ fontSize: '24px', fontWeight: 'bold', color: tema.textoHeaderLogo }} aria-hidden="true">Monstera</span>
+          <span className="cat-logo-text" style={{ fontSize: '24px', fontWeight: 'bold', color: tema.textoHeaderLogo }} aria-hidden="true">Monstera</span>
         </div>
 
         {/* Input de búsqueda centrado */}
@@ -270,10 +369,11 @@ function Catalogo() {
         <div style={{ display: 'flex', alignItems: 'center', gap: '16px', flexShrink: 0 }}>
           {/* Botón de carrito */}
           <button 
+            className="cat-btn-carrito"
             aria-label={`${t('carrito')}, contiene ${carritoCount} artículos`}
             style={{ display: 'flex', alignItems: 'center', gap: '8px', backgroundColor: '#19381f', color: '#ffffff', border: 'none', padding: '10px 20px', borderRadius: '8px', fontWeight: '600', cursor: 'pointer', fontSize: '14px' }}
           >
-            <span>{t('carro')} ({carritoCount})</span>
+            <span className="cat-carrito-texto">{t('carro')}</span><span>({carritoCount})</span>
           </button>
 
           {/* BOTÓN HAMBURGUESA: agrupa color de enfoque, idioma, modo y salir */}
@@ -311,25 +411,38 @@ function Catalogo() {
                 <span style={{ display: 'block', fontSize: '11px', fontWeight: '700', letterSpacing: '1px', textTransform: 'uppercase', color: tema.textoSecundario, marginBottom: '12px' }}>
                   {t('color') || 'Color de enfoque'}
                 </span>
-                <label
-                  htmlFor="color-contorno"
-                  style={{ display: 'flex', alignItems: 'center', gap: '12px', cursor: 'pointer' }}
-                  title="Elige el color de contorno al pasar el cursor sobre una tarjeta"
-                >
-                  <span style={{ position: 'relative', width: '32px', height: '32px', flexShrink: 0 }}>
-                    <input
-                      id="color-contorno"
-                      type="color"
-                      value={colorContorno}
-                      onChange={(e) => setColorContorno(e.target.value)}
-                      style={{ width: '32px', height: '32px', padding: 0, border: 'none', borderRadius: '8px', cursor: 'pointer', background: 'none' }}
-                      aria-label="Seleccionar color de contorno de las tarjetas"
-                    />
-                  </span>
-                  <span style={{ fontSize: '14px', fontWeight: '600', color: tema.textoPrincipal, textTransform: 'uppercase' }}>
-                    {colorContorno}
-                  </span>
-                </label>
+                <div role="group" aria-label="Paleta de colores de contorno" style={{ display: 'flex', flexWrap: 'wrap', gap: '10px' }}>
+                  {coloresDisponibles.map((color) => {
+                    const seleccionado = colorContorno.toLowerCase() === color.toLowerCase();
+                    return (
+                      <button
+                        key={color}
+                        type="button"
+                        onClick={() => setColorContorno(color)}
+                        aria-label={`Color ${color}`}
+                        aria-pressed={seleccionado}
+                        title={color}
+                        style={{
+                          width: '30px',
+                          height: '30px',
+                          borderRadius: '50%',
+                          backgroundColor: color,
+                          cursor: 'pointer',
+                          border: seleccionado ? `2px solid ${tema.textoPrincipal}` : '2px solid transparent',
+                          boxShadow: seleccionado ? `0 0 0 2px ${tema.bgHeader}, 0 0 0 4px ${color}` : 'none',
+                          padding: 0,
+                          display: 'flex',
+                          alignItems: 'center',
+                          justifyContent: 'center'
+                        }}
+                      >
+                        {seleccionado && (
+                          <span aria-hidden="true" style={{ color: '#ffffff', fontSize: '13px', fontWeight: '700', textShadow: '0 1px 2px rgba(0,0,0,0.5)' }}>✓</span>
+                        )}
+                      </button>
+                    );
+                  })}
+                </div>
               </div>
 
               <hr style={{ border: 'none', height: '1px', backgroundColor: tema.bordeSeparador, margin: 0 }} aria-hidden="true" />
@@ -456,8 +569,27 @@ function Catalogo() {
             paddingRight: '4px'
           }}
         >
-          <h2 style={{ fontSize: '12px', fontWeight: '700', color: tema.textoDestacado, letterSpacing: '1px', marginBottom: '25px', textTransform: 'uppercase' }}>{t('filtros')}</h2>
+          {/* Título fijo en escritorio/tablet */}
+          <h2 className="cat-filtros-titulo-desktop" style={{ fontSize: '12px', fontWeight: '700', color: tema.textoDestacado, letterSpacing: '1px', marginBottom: '25px', textTransform: 'uppercase' }}>{t('filtros')}</h2>
+
+          {/* Botón desplegable, solo visible en celulares */}
+          <button
+            type="button"
+            className="cat-filtros-toggle"
+            onClick={() => setFiltrosAbiertos(!filtrosAbiertos)}
+            aria-expanded={filtrosAbiertos}
+            aria-controls="contenido-filtros"
+            style={{
+              fontSize: '12px', fontWeight: '700', color: tema.textoDestacado, letterSpacing: '1px', textTransform: 'uppercase',
+              background: 'none', border: 'none', cursor: 'pointer', width: '100%'
+            }}
+          >
+            {t('filtros')}
+            <span className="cat-filtros-flecha" aria-hidden="true" style={{ transform: filtrosAbiertos ? 'rotate(180deg)' : 'rotate(0deg)' }}>▾</span>
+          </button>
           
+          <div id="contenido-filtros" className={`cat-filtros-contenido ${filtrosAbiertos ? 'abierto' : ''}`}>
+
           {/* TIPO DE PLANTA */}
           <fieldset style={{ border: 'none', padding: 0, margin: '0 0 30px 0' }}>
             <legend style={{ fontSize: '13px', fontWeight: '700', color: tema.textoDestacado, marginBottom: '15px', textTransform: 'uppercase', width: '100%' }}>
@@ -518,12 +650,14 @@ function Catalogo() {
               </label>
             </div>
           </fieldset>
+
+          </div>
         </aside>
 
         {/* CONTENIDO CATÁLOGO */}
         <main style={{ flex: 1 }}>
           <div style={{ marginBottom: '30px' }}>
-            <h1 style={{ fontSize: '32px', fontWeight: '700', color: tema.textoPrincipal, margin: '0 0 5px 0' }}>{t('titulo')}</h1>
+            <h1 className="cat-h1" style={{ fontSize: '32px', fontWeight: '700', color: tema.textoPrincipal, margin: '0 0 5px 0' }}>{t('titulo')}</h1>
             <p style={{ color: tema.textoDestacado, fontSize: '14px', margin: 0 }} aria-live="polite">
               {t('mostrando', { count: productosFiltrados.length })}
             </p>
@@ -599,6 +733,7 @@ function Catalogo() {
                         ${planta.precio} <span style={{ fontSize: '12px', color: tema.textoSecundario, fontWeight: 'normal' }}>{i18n.language === 'es' ? 'pesos mexicanos' : 'MXN'}</span>
                       </span>
                       <button 
+                        className="cat-btn-anadir"
                         disabled={planta.stock === 0}
                         onClick={() => setCarritoCount(prev => prev + 1)}
                         aria-label={planta.stock === 0 ? `Agotado` : `Añadir ${planta.nombre}`}
